@@ -1,43 +1,17 @@
 import { useTranslation } from "react-i18next";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { ListFilter, LogOut, Wrench, User, Smartphone, LayoutGrid } from "lucide-react";
-import { toast } from "sonner";
+import { Navbar } from "@/components/Navbar";
 import { RepairRequestForm } from "@/components/RepairRequestForm";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ListFilter, Smartphone, LayoutGrid, User, Wrench } from "lucide-react";
 
 const Index = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    toast.success(t("logoutSuccess"));
-    navigate("/login");
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
-      <header className="w-full px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center bg-white dark:bg-gray-900 shadow-sm">
-        <div className="flex items-center gap-4">
-          <Wrench size={36} className="text-blue-600 dark:text-blue-400" />
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">{t("appTitle")}</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">{t("systemDescription")}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 mt-4 md:mt-0">
-          <ThemeToggle />
-          <LanguageSwitcher />
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
-            <LogOut size={16} />
-            {t("logout")}
-          </Button>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-10 items-start">
+      <Navbar showHome={false} showOrders={true} showLogout={true} showStatistics={true} />
+      <main className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row gap-10 items-start">
         <section className="flex-1 space-y-8">
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-8 flex flex-col items-center text-center">
             <Smartphone size={48} className="text-blue-500 mb-4" />

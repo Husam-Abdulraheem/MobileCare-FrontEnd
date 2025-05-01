@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { EditRepairOrderDialog } from "@/components/EditRepairOrderDialog";
 import { useTranslation } from 'react-i18next';
+import { Navbar } from "@/components/Navbar";
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -212,29 +213,7 @@ const RepairOrders = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
-      <header className="w-full px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center bg-white dark:bg-gray-900 shadow-sm">
-        <div className="flex items-center gap-4">
-          <LayoutGrid size={36} className="text-blue-600 dark:text-blue-400" />
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">{t('allRepairOrders')}</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">{t('systemDescription')}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 mt-4 md:mt-0">
-          <Link to="/">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Home size={16} />
-              {t('backToHome')}
-            </Button>
-          </Link>
-          <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
-            <LogOut size={16} />
-            {t('logout')}
-          </Button>
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
-      </header>
+      <Navbar showHome={true} showOrders={false} showLogout={true} showStatistics={true} />
       <main className="max-w-7xl mx-auto px-4 py-10">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="flex-1 flex items-center gap-2 bg-white dark:bg-gray-900 rounded-lg shadow px-4 py-3">
