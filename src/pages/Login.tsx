@@ -1,59 +1,46 @@
-
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LogIn, User, Lock } from "lucide-react";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthContext } from "../App";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
-  // Mock credentials for demonstration
-  const mockUsers = [
-    { username: "admin", password: "admin123", role: "admin" },
-    { username: "tech", password: "tech123", role: "technician" }
-  ];
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!username || !password) {
+    if (!email || !password) {
       toast.error("الرجاء إدخال اسم المستخدم وكلمة المرور");
       return;
     }
-
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      const user = mockUsers.find(
-        u => u.username === username && u.password === password
-      );
-
+    try {
+      const res = await axios.post("https://localhost:7042/api/Auth/login", {
+        email: email,
+        password
+      });
+      const { token } = res.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("currentUser", email);
+      setIsAuthenticated(true);
+      toast.success("تم تسجيل الدخول بنجاح");
+      navigate("/");
+    } catch (error) {
+      toast.error("اسم المستخدم أو كلمة المرور غير صحيحة");
+    } finally {
       setIsLoading(false);
-
-      if (user) {
-        // In a real app, you would store auth token in localStorage or use a state management library
-        localStorage.setItem("currentUser", JSON.stringify({ 
-          username: user.username, 
-          role: user.role, 
-          id: `TECH-${Math.floor(Math.random() * 1000)}` 
-        }));
-        
-        toast.success("تم تسجيل الدخول بنجاح");
-        navigate("/");
-      } else {
-        toast.error("اسم المستخدم أو كلمة المرور غير صحيحة");
-      }
-    }, 1000);
+    }
   };
 
   return (
@@ -77,16 +64,16 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-right block">اسم المستخدم</Label>
+                <Label htmlFor="email" className="text-right block">اسم المستخدم</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                   <Input
-                    id="username"
+                    id="email"
                     placeholder="أدخل اسم المستخدم"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
-                    autoComplete="username"
+                    autoComplete="email"
                   />
                 </div>
               </div>

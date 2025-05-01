@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 
@@ -7,13 +6,33 @@ interface RepairOrder {
   dateCreated: Date;
   deviceBrand: string;
   deviceModel: string;
-  issueDescription: string;
+  problemDescription: string;
   status: string;
   estimatedCost: number;
 }
 
 interface PreviousRepairsProps {
   repairs: RepairOrder[];
+}
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case "Pending": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    case "InProgress": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+    case "Ready": return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+    case "Collected": return "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+  }
+}
+
+function translateStatus(status: string) {
+  switch (status) {
+    case "Pending": return "قيد الانتظار";
+    case "InProgress": return "قيد التنفيذ";
+    case "Ready": return "جاهز";
+    case "Collected": return "تم الاستلام";
+    default: return status;
+  }
 }
 
 export function PreviousRepairs({ repairs }: PreviousRepairsProps) {
@@ -30,7 +49,7 @@ export function PreviousRepairs({ repairs }: PreviousRepairsProps) {
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Device</TableHead>
-              <TableHead>Issue</TableHead>
+              <TableHead>Problem</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Cost</TableHead>
             </TableRow>
@@ -40,13 +59,10 @@ export function PreviousRepairs({ repairs }: PreviousRepairsProps) {
               <TableRow key={repair.id}>
                 <TableCell>{format(repair.dateCreated, "PP")}</TableCell>
                 <TableCell>{`${repair.deviceBrand} ${repair.deviceModel}`}</TableCell>
-                <TableCell className="max-w-xs truncate">{repair.issueDescription}</TableCell>
+                <TableCell className="max-w-xs truncate">{repair.problemDescription}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium 
-                    ${repair.status === "Completed" ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : 
-                    repair.status === "Pending" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300" : 
-                    "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"}`}>
-                    {repair.status}
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(repair.status)}`}>
+                    {translateStatus(repair.status)}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">${repair.estimatedCost.toFixed(2)}</TableCell>

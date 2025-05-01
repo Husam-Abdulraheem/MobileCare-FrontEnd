@@ -1,10 +1,19 @@
-
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { RepairRequestForm } from "@/components/RepairRequestForm";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { ListFilter, LogOut } from "lucide-react";
 import { toast } from "sonner";
+
+interface RepairOrder {
+  id: string;
+  dateCreated: Date;
+  deviceBrand: string;
+  deviceModel: string;
+  problemDescription: string;
+  status: string;
+  estimatedCost: number;
+}
 
 const Index = () => {
   const navigate = useNavigate();

@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { EditRepairOrderDialog } from "@/components/EditRepairOrderDialog";
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -26,14 +27,13 @@ interface RepairOrder {
   deviceBrand: string;
   deviceModel: string;
   imeiNumber?: string;
-  issueDescription: string;
+  problemDescription: string;
   deviceCondition: string;
   estimatedCost: number;
   deliveryDate: Date;
-  status: "Pending" | "InProgress" | "Completed" | "Cancelled";
+  status: "Pending" | "InProgress" | "Ready" | "Collected";
   dateCreated: Date;
   urgencyDays: number;
-  notes?: string;
   technicianId: string;
 }
 
@@ -44,52 +44,84 @@ const RepairOrders = () => {
   // البحث والتصفية
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<any | null>(null);
   
   useEffect(() => {
-    const userId = 1; // or get from auth context
+    // Get userId from JWT token in localStorage
+    const token = localStorage.getItem("token");
+    let userId = 0;
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        userId = payload.sub ? Number(payload.sub) : 0;
+      } catch (e) {
+        userId = 0;
+      }
+    }
     axios.get("https://localhost:7042/api/RepairOrders/get-orders-by-user", {
-      params: { userId: userId },
+      params: { userId }
     })
       .then(res => {
         const apiOrders = res.data.map((item: any) => ({
-          id: item.repairOrderId?.toString(),
-          customerName: item.customerFullName,
-          phoneNumber: item.phoneNumber,
-          deviceBrand: item.brand,
-          deviceModel: item.model,
-          imeiNumber: item.imei,
-          issueDescription: item.problemDescription,
-          deviceCondition: item.deviceCondition,
-          deliveryDate: item.updatedAt,
-          status: item.status,
-          dateCreated: item.createdAt,
-          userFullName: item.userFullName
+          id: item.repairOrderId?.toString() ?? "",
+          customerName: item.customerFullName ?? "",
+          phoneNumber: item.phoneNumber ?? "",
+          deviceBrand: item.brand ?? "",
+          deviceModel: item.model ?? "",
+          imeiNumber: item.imei ?? "",
+          problemDescription: item.problemDescription ?? "",
+          deviceCondition: item.deviceCondition ?? "",
+          estimatedCost: item.estimatedCost !== undefined ? Number(item.estimatedCost) : 0,
+          deliveryDate: item.updatedAt ? new Date(item.updatedAt) : new Date(),
+          status: item.status ?? "Pending",
+          dateCreated: item.createdAt ? new Date(item.createdAt) : new Date(),
+          urgencyDays: 0,
+          ProblemDescription: "",
+          technicianId: item.userFullName ?? ""
         }));
         setOrders(apiOrders);
       })
       .catch(() => {
-        toast.error("Failed to fetch request data from server");
+        toast.error("فشل في جلب بيانات الطلبات من الخادم");
       });
-  }, [])
+  }, []);
   
   // الطلبات المعروضة بعد التصفية
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.phoneNumber.includes(searchTerm) ||
-      order.deviceModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.imeiNumber && order.imeiNumber.includes(searchTerm));
-      
+    const search = searchTerm.trim().toLowerCase();
+    if (!search) return statusFilter === "all" ? true : order.status === statusFilter;
+    const matchesSearch =
+      (order.customerName && order.customerName.toLowerCase().includes(search)) ||
+      (order.phoneNumber && order.phoneNumber.toLowerCase().includes(search)) ||
+      (order.deviceBrand && order.deviceBrand.toLowerCase().includes(search)) ||
+      (order.deviceModel && order.deviceModel.toLowerCase().includes(search)) ||
+      (order.imeiNumber && order.imeiNumber.toLowerCase().includes(search));
     const matchesStatus = statusFilter === "all" ? true : order.status === statusFilter;
-    
     return matchesSearch && matchesStatus;
   });
   
   // تغيير حالة الطلب
-  const handleStatusChange = (orderId: string, newStatus: "Pending" | "InProgress" | "Completed" | "Cancelled") => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+  const handleStatusChange = (orderId: string, newStatus: "Pending" | "InProgress" | "Ready" | "Collected") => {
+    const token = localStorage.getItem("token");
+    axios.put(
+      `https://localhost:7042/api/RepairOrders/update-status`,
+      {},
+      {
+        params: { repairOrderId: orderId, status: newStatus },
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      }
+    )
+      .then(() => {
+        setOrders(orders.map(order =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        ));
+        toast.success("تم تحديث حالة الطلب بنجاح");
+      })
+      .catch(() => {
+        toast.error("فشل في تحديث حالة الطلب");
+      });
   };
 
   // Handle logout
@@ -98,14 +130,68 @@ const RepairOrders = () => {
     toast.success("تم تسجيل الخروج بنجاح");
     navigate("/login");
   };
+
+  const startEdit = (order: RepairOrder) => {
+    setEditingOrder({
+      id: order.id, // Ensure id is included
+      customerFullName: order.customerName,
+      phoneNumber: order.phoneNumber,
+      brand: order.deviceBrand,
+      model: order.deviceModel,
+      imei: order.imeiNumber,
+      problemDescription: order.problemDescription,
+      deviceCondition: order.deviceCondition,
+      estimatedCost: order.estimatedCost,
+      userFullName: order.technicianId,
+      updatedAt: new Date().toISOString(),
+      status: order.status
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditSave = async (form: any) => {
+    const token = localStorage.getItem("token");
+    if (!form.id) {
+      toast.error("معرّف الطلب غير موجود!");
+      return;
+    }
+    try {
+      await axios.put(
+        `https://localhost:7042/api/RepairOrders/update-order/${form.id}`,
+        form,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+      setOrders(orders.map(order =>
+        order.id === form.id ? {
+          ...order,
+          customerName: form.customerFullName,
+          phoneNumber: form.phoneNumber,
+          deviceBrand: form.brand,
+          deviceModel: form.model,
+          imeiNumber: form.imei,
+          problemDescription: form.problemDescription,
+          deviceCondition: form.deviceCondition,
+          estimatedCost: form.estimatedCost,
+          technicianId: form.userFullName,
+          status: form.status,
+          deliveryDate: new Date(form.updatedAt)
+        } : order
+      ));
+      toast.success("تم تحديث الطلب بنجاح");
+      setEditDialogOpen(false);
+      setEditingOrder(null);
+    } catch {
+      toast.error("فشل في تحديث الطلب");
+    }
+  };
   
   // لون الحالة
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending": return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300";
       case "InProgress": return "bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300";
-      case "Completed": return "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300";
-      case "Cancelled": return "bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-300";
+      case "Ready": return "bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-300";
+      case "Collected": return "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300";
       default: return "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300";
     }
   };
@@ -115,8 +201,8 @@ const RepairOrders = () => {
     switch (status) {
       case "Pending": return "قيد الانتظار";
       case "InProgress": return "قيد التنفيذ";
-      case "Completed": return "مكتمل";
-      case "Cancelled": return "ملغي";
+      case "Ready": return "جاهز";
+      case "Collected": return "تم الاستلام";
       default: return status;
     }
   };
@@ -164,8 +250,8 @@ const RepairOrders = () => {
                 <SelectItem value="all">جميع الحالات</SelectItem>
                 <SelectItem value="Pending">قيد الانتظار</SelectItem>
                 <SelectItem value="InProgress">قيد التنفيذ</SelectItem>
-                <SelectItem value="Completed">مكتمل</SelectItem>
-                <SelectItem value="Cancelled">ملغي</SelectItem>
+                <SelectItem value="Ready">جاهز</SelectItem>
+                <SelectItem value="Collected">تم الاستلام</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -178,54 +264,22 @@ const RepairOrders = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-bold">رقم الطلب</TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <User size={16} />
-                      اسم العميل
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <Phone size={16} />
-                      رقم الهاتف
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <Smartphone size={16} />
-                      نوع الجهاز
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <FileText size={16} />
-                      المشكلة
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <DollarSign size={16} />
-                      التكلفة
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} />
-                      موعد التسليم
-                    </div>
-                  </TableHead>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} />
-                      الحالة
-                    </div>
-                  </TableHead>
+                  <TableHead>اسم العميل</TableHead>
+                  <TableHead>رقم الهاتف</TableHead>
+                  <TableHead>نوع الجهاز / الموديل / IMEI</TableHead>
+                  <TableHead>وصف المشكلة</TableHead>
+                  <TableHead>حالة الجهاز</TableHead>
+                  <TableHead>التكلفة</TableHead>
+                  <TableHead>موعد التسليم</TableHead>
+                  <TableHead>الحالة</TableHead>
+                  <TableHead>الفني</TableHead>
+                  <TableHead>الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       لا توجد طلبات مطابقة للبحث
                     </TableCell>
                   </TableRow>
@@ -244,14 +298,15 @@ const RepairOrders = () => {
                         )}
                       </TableCell>
                       <TableCell className="max-w-xs">
-                        <div className="truncate">{order.issueDescription}</div>
+                        <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
-                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} ريال</TableCell>
+                      <TableCell>{order.deviceCondition}</TableCell>
+                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
                         <Select 
                           value={order.status} 
-                          onValueChange={(value: "Pending" | "InProgress" | "Completed" | "Cancelled") => 
+                          onValueChange={(value: "Pending" | "InProgress" | "Ready" | "Collected") => 
                             handleStatusChange(order.id, value)
                           }
                         >
@@ -261,10 +316,14 @@ const RepairOrders = () => {
                           <SelectContent>
                             <SelectItem value="Pending">قيد الانتظار</SelectItem>
                             <SelectItem value="InProgress">قيد التنفيذ</SelectItem>
-                            <SelectItem value="Completed">مكتمل</SelectItem>
-                            <SelectItem value="Cancelled">ملغي</SelectItem>
+                            <SelectItem value="Ready">جاهز</SelectItem>
+                            <SelectItem value="Collected">تم الاستلام</SelectItem>
                           </SelectContent>
                         </Select>
+                      </TableCell>
+                      <TableCell>{order.technicianId}</TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="outline" onClick={() => startEdit(order)}>تعديل</Button>
                       </TableCell>
                     </TableRow>
                   ))
@@ -273,6 +332,12 @@ const RepairOrders = () => {
             </Table>
           </div>
         </div>
+        <EditRepairOrderDialog
+          open={editDialogOpen}
+          order={editingOrder}
+          onClose={() => { setEditDialogOpen(false); setEditingOrder(null); }}
+          onSave={handleEditSave}
+        />
       </div>
     </div>
   );

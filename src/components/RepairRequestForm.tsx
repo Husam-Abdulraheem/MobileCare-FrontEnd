@@ -26,7 +26,7 @@ interface RepairOrder {
   dateCreated: Date;
   deviceBrand: string;
   deviceModel: string;
-  issueDescription: string;
+  problemDescription: string;
   status: string;
   estimatedCost: number;
 }
@@ -38,10 +38,9 @@ export const RepairRequestForm = () => {
   const [deviceBrand, setDeviceBrand] = useState("");
   const [deviceModel, setDeviceModel] = useState("");
   const [imeiNumber, setImeiNumber] = useState("");
-  const [issueDescription, setIssueDescription] = useState("");
+  const [problemDescription, setProblemDescription] = useState("");
   const [deviceCondition, setDeviceCondition] = useState("");
   const [estimatedCost, setEstimatedCost] = useState("");
-  const [notes, setNotes] = useState("");
   const [urgencyDays, setUrgencyDays] = useState("3");
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(undefined);
   const [status] = useState("Pending");
@@ -49,23 +48,22 @@ export const RepairRequestForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validate required fields
-    if (!customerName || !phoneNumber || !deviceBrand || !deviceModel || !issueDescription || !estimatedCost || !deviceCondition) {
+    if (!customerName || !phoneNumber || !deviceBrand || !deviceModel || !problemDescription || !estimatedCost || !deviceCondition) {
       toast.error("Please fill in all required fields.");
       return;
     }
     try {
-      const userId = Number(localStorage.getItem("currentUserId")) || 0;
+      const userId = 1;
       await axios.post("https://localhost:7042/api/RepairOrders/create-order", {
         customerName,
         phoneNumber,
         deviceBrand,
         deviceModel,
-        imei: imeiNumber,
-        problemDescription: issueDescription,
+        imeiNumber,
+        problemDescription,
         deviceCondition,
         estimatedCost: Number(estimatedCost),
-        userId,
-        notes
+        userId
       });
       toast.success("Repair request created successfully!");
       handleClearForm();
@@ -80,10 +78,9 @@ export const RepairRequestForm = () => {
     setDeviceBrand("");
     setDeviceModel("");
     setImeiNumber("");
-    setIssueDescription("");
+    setProblemDescription("");
     setDeviceCondition("");
     setEstimatedCost("");
-    setNotes("");
     setUrgencyDays("3");
     setDeliveryDate(undefined);
     toast.info("Form cleared");
@@ -228,13 +225,13 @@ export const RepairRequestForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="issueDescription" className="text-sm font-medium">
-              Issue Description <span className="text-red-500">*</span>
+            <Label htmlFor="problemDescription" className="text-sm font-medium">
+              Problem Description <span className="text-red-500">*</span>
             </Label>
             <Textarea 
-              id="issueDescription" 
-              value={issueDescription} 
-              onChange={(e) => setIssueDescription(e.target.value)} 
+              id="problemDescription" 
+              value={problemDescription} 
+              onChange={(e) => setProblemDescription(e.target.value)} 
               placeholder="Describe the issue with the device"
               className="min-h-[120px]"
               required
@@ -330,19 +327,6 @@ export const RepairRequestForm = () => {
               </Select>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">New repair requests are created with pending status</p>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium">
-              Additional Notes <span className="text-gray-400">(Optional)</span>
-            </Label>
-            <Textarea 
-              id="notes" 
-              value={notes} 
-              onChange={(e) => setNotes(e.target.value)} 
-              placeholder="Any additional information or special requests"
-              className="min-h-[80px]"
-            />
           </div>
         </CardContent>
       </Card>
