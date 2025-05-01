@@ -10,8 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthContext } from "../App";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +24,7 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("الرجاء إدخال اسم المستخدم وكلمة المرور");
+      toast.error(t('errorRequiredFields'));
       return;
     }
     setIsLoading(true);
@@ -34,10 +37,10 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("currentUser", email);
       setIsAuthenticated(true);
-      toast.success("تم تسجيل الدخول بنجاح");
+      toast.success(t('successLogin'));
       navigate("/");
     } catch (error) {
-      toast.error("اسم المستخدم أو كلمة المرور غير صحيحة");
+      toast.error(t('errorLogin'));
     } finally {
       setIsLoading(false);
     }
@@ -49,6 +52,7 @@ const Login = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">MobileCare</h1>
           <ThemeToggle />
+          <LanguageSwitcher />
         </div>
         
         <Card className="w-full">

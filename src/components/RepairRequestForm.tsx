@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 import { PreviousRepairs } from "./PreviousRepairs";
 
@@ -33,6 +34,7 @@ interface RepairOrder {
 
 export const RepairRequestForm = () => {
   // Form state
+  const { t } = useTranslation();
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [deviceBrand, setDeviceBrand] = useState("");
@@ -49,7 +51,7 @@ export const RepairRequestForm = () => {
     e.preventDefault();
     // Validate required fields
     if (!customerName || !phoneNumber || !deviceBrand || !deviceModel || !problemDescription || !estimatedCost || !deviceCondition) {
-      toast.error("Please fill in all required fields.");
+      toast.error(t('errorRequiredFields'));
       return;
     }
     try {
@@ -65,10 +67,10 @@ export const RepairRequestForm = () => {
         estimatedCost: Number(estimatedCost),
         userId
       });
-      toast.success("Repair request created successfully!");
+      toast.success(t('successOrderCreated'));
       handleClearForm();
     } catch (error) {
-      toast.error("Failed to create repair order.");
+      toast.error(t('errorOrderCreate'));
     }
   };
 
@@ -83,7 +85,7 @@ export const RepairRequestForm = () => {
     setEstimatedCost("");
     setUrgencyDays("3");
     setDeliveryDate(undefined);
-    toast.info("Form cleared");
+    toast.info(t('infoFormCleared'));
   };
 
   const deviceBrands = [

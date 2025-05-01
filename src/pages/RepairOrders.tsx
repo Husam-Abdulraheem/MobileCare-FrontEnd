@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { 
@@ -18,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { EditRepairOrderDialog } from "@/components/EditRepairOrderDialog";
+import { useTranslation } from 'react-i18next';
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -38,6 +40,7 @@ interface RepairOrder {
 }
 
 const RepairOrders = () => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<RepairOrder[]>([]);
   const navigate = useNavigate();
   
@@ -84,7 +87,7 @@ const RepairOrders = () => {
         setOrders(apiOrders);
       })
       .catch(() => {
-        toast.error("فشل في جلب بيانات الطلبات من الخادم");
+        toast.error(t('errorFetchOrders'));
       });
   }, []);
   
@@ -117,17 +120,17 @@ const RepairOrders = () => {
         setOrders(orders.map(order =>
           order.id === orderId ? { ...order, status: newStatus } : order
         ));
-        toast.success("تم تحديث حالة الطلب بنجاح");
+        toast.success(t('successStatusUpdated'));
       })
       .catch(() => {
-        toast.error("فشل في تحديث حالة الطلب");
+        toast.error(t('errorStatusUpdate'));
       });
   };
 
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
-    toast.success("تم تسجيل الخروج بنجاح");
+    toast.success(t('successLogout'));
     navigate("/login");
   };
 
@@ -152,7 +155,7 @@ const RepairOrders = () => {
   const handleEditSave = async (form: any) => {
     const token = localStorage.getItem("token");
     if (!form.id) {
-      toast.error("معرّف الطلب غير موجود!");
+      toast.error(t('errorOrderIdMissing'));
       return;
     }
     try {
@@ -177,11 +180,11 @@ const RepairOrders = () => {
           deliveryDate: new Date(form.updatedAt)
         } : order
       ));
-      toast.success("تم تحديث الطلب بنجاح");
+      toast.success(t('successOrderUpdated'));
       setEditDialogOpen(false);
       setEditingOrder(null);
     } catch {
-      toast.error("فشل في تحديث الطلب");
+      toast.error(t('errorOrderUpdate'));
     }
   };
   
@@ -199,10 +202,10 @@ const RepairOrders = () => {
   // ترجمة الحالة إلى العربية
   const translateStatus = (status: string) => {
     switch (status) {
-      case "Pending": return "قيد الانتظار";
-      case "InProgress": return "قيد التنفيذ";
-      case "Ready": return "جاهز";
-      case "Collected": return "تم الاستلام";
+      case "Pending": return t('pending');
+      case "InProgress": return t('inProgress');
+      case "Ready": return t('ready');
+      case "Collected": return t('collected');
       default: return status;
     }
   };
@@ -212,21 +215,22 @@ const RepairOrders = () => {
       <div className="max-w-7xl mx-auto">
         <header className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">MobileCare</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">جميع طلبات الإصلاح</p>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{t('appTitle')}</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">{t('allRepairOrders')}</p>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/">
               <Button variant="outline" className="flex items-center gap-2">
                 <Home size={16} />
-                العودة للرئيسية
+                {t('backToHome')}
               </Button>
             </Link>
             <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
               <LogOut size={16} />
-              تسجيل الخروج
+              {t('logout')}
             </Button>
             <ThemeToggle />
+            <LanguageSwitcher />
           </div>
         </header>
         
@@ -235,7 +239,7 @@ const RepairOrders = () => {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input
-              placeholder="البحث بالاسم، رقم الهاتف، الموديل، أو IMEI"
+              placeholder={t('searchPlaceholder')}
               className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -244,14 +248,14 @@ const RepairOrders = () => {
           <div className="w-full sm:w-48">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="تصفية بالحالة" />
+                <SelectValue placeholder={t('filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="Pending">قيد الانتظار</SelectItem>
-                <SelectItem value="InProgress">قيد التنفيذ</SelectItem>
-                <SelectItem value="Ready">جاهز</SelectItem>
-                <SelectItem value="Collected">تم الاستلام</SelectItem>
+                <SelectItem value="all">{t('filterByStatus')}</SelectItem>
+                <SelectItem value="Pending">{t('pending')}</SelectItem>
+                <SelectItem value="InProgress">{t('inProgress')}</SelectItem>
+                <SelectItem value="Ready">{t('ready')}</SelectItem>
+                <SelectItem value="Collected">{t('collected')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -263,24 +267,24 @@ const RepairOrders = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold">رقم الطلب</TableHead>
-                  <TableHead>اسم العميل</TableHead>
-                  <TableHead>رقم الهاتف</TableHead>
-                  <TableHead>نوع الجهاز / الموديل / IMEI</TableHead>
-                  <TableHead>وصف المشكلة</TableHead>
-                  <TableHead>حالة الجهاز</TableHead>
-                  <TableHead>التكلفة</TableHead>
-                  <TableHead>موعد التسليم</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الفني</TableHead>
-                  <TableHead>الإجراءات</TableHead>
+                  <TableHead className="font-bold">{t('id') || 'رقم الطلب'}</TableHead>
+                  <TableHead>{t('customerName')}</TableHead>
+                  <TableHead>{t('phoneNumber')}</TableHead>
+                  <TableHead>{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
+                  <TableHead>{t('problemDescription')}</TableHead>
+                  <TableHead>{t('deviceCondition')}</TableHead>
+                  <TableHead>{t('estimatedCost')}</TableHead>
+                  <TableHead>{t('deliveryDate')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('technician')}</TableHead>
+                  <TableHead>{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredOrders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8 text-gray-500">
-                      لا توجد طلبات مطابقة للبحث
+                      {t('noMatchingOrders')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -314,16 +318,16 @@ const RepairOrders = () => {
                             <SelectValue>{translateStatus(order.status)}</SelectValue>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Pending">قيد الانتظار</SelectItem>
-                            <SelectItem value="InProgress">قيد التنفيذ</SelectItem>
-                            <SelectItem value="Ready">جاهز</SelectItem>
-                            <SelectItem value="Collected">تم الاستلام</SelectItem>
+                            <SelectItem value="Pending">{t('pending')}</SelectItem>
+                            <SelectItem value="InProgress">{t('inProgress')}</SelectItem>
+                            <SelectItem value="Ready">{t('ready')}</SelectItem>
+                            <SelectItem value="Collected">{t('collected')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
                       <TableCell>{order.technicianId}</TableCell>
                       <TableCell>
-                        <Button size="sm" variant="outline" onClick={() => startEdit(order)}>تعديل</Button>
+                        <Button size="sm" variant="outline" onClick={() => startEdit(order)}>{t('edit')}</Button>
                       </TableCell>
                     </TableRow>
                   ))
