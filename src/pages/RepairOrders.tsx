@@ -13,7 +13,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Home, Search, Filter, User, Phone, Smartphone, FileText, DollarSign, Calendar, Clock, LogOut } from "lucide-react";
+import { Home, Search, Filter, User, Phone, Smartphone, FileText, DollarSign, Calendar, Clock, LogOut, LayoutGrid, ListFilter } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -199,7 +199,7 @@ const RepairOrders = () => {
     }
   };
   
-  // ترجمة الحالة إلى العربية
+  // Translate status 
   const translateStatus = (status: string) => {
     switch (status) {
       case "Pending": return t('pending');
@@ -211,36 +211,37 @@ const RepairOrders = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
+      <header className="w-full px-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center bg-white dark:bg-gray-900 shadow-sm">
+        <div className="flex items-center gap-4">
+          <LayoutGrid size={36} className="text-blue-600 dark:text-blue-400" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{t('appTitle')}</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">{t('allRepairOrders')}</p>
+            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">{t('allRepairOrders')}</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm">{t('systemDescription')}</p>
           </div>
-          <div className="flex items-center gap-4">
-            <Link to="/">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Home size={16} />
-                {t('backToHome')}
-              </Button>
-            </Link>
-            <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
-              <LogOut size={16} />
-              {t('logout')}
+        </div>
+        <div className="flex items-center gap-4 mt-4 md:mt-0">
+          <Link to="/">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Home size={16} />
+              {t('backToHome')}
             </Button>
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-        </header>
-        
-        {/* أدوات البحث والتصفية */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          </Link>
+          <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
+            <LogOut size={16} />
+            {t('logout')}
+          </Button>
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-4 py-10">
+        <div className="flex flex-col md:flex-row gap-6 mb-8">
+          <div className="flex-1 flex items-center gap-2 bg-white dark:bg-gray-900 rounded-lg shadow px-4 py-3">
+            <Search className="text-gray-400" size={20} />
             <Input
               placeholder={t('searchPlaceholder')}
-              className="pl-10"
+              className="border-0 bg-transparent focus:ring-0 focus:border-blue-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -260,9 +261,7 @@ const RepairOrders = () => {
             </Select>
           </div>
         </div>
-        
-        {/* جدول الطلبات */}
-        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
+        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -283,18 +282,18 @@ const RepairOrders = () => {
               <TableBody>
                 {filteredOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={11} className="text-center py-8 text-gray-500">
                       {t('noMatchingOrders')}
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredOrders.map((order) => (
-                    <TableRow key={order.id}>
+                    <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
                       <TableCell className="font-medium">{order.id}</TableCell>
                       <TableCell>{order.customerName}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.phoneNumber}</TableCell>
                       <TableCell>
-                        {order.deviceBrand} {order.deviceModel}
+                        <span className="font-semibold text-blue-700 dark:text-blue-300">{order.deviceBrand}</span> {order.deviceModel}
                         {order.imeiNumber && (
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             IMEI: {order.imeiNumber}
@@ -342,7 +341,7 @@ const RepairOrders = () => {
           onClose={() => { setEditDialogOpen(false); setEditingOrder(null); }}
           onSave={handleEditSave}
         />
-      </div>
+      </main>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Check, Phone, Wrench, Calendar as CalendarIcon, Smartphone } from "lucide-react";
-import { format } from "date-fns";
+import { Check, Phone, Wrench, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import axios from "axios";
@@ -11,8 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 import { PreviousRepairs } from "./PreviousRepairs";
@@ -44,7 +41,6 @@ export const RepairRequestForm = () => {
   const [deviceCondition, setDeviceCondition] = useState("");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [urgencyDays, setUrgencyDays] = useState("3");
-  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(undefined);
   const [status] = useState("Pending");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,7 +80,6 @@ export const RepairRequestForm = () => {
     setDeviceCondition("");
     setEstimatedCost("");
     setUrgencyDays("3");
-    setDeliveryDate(undefined);
     toast.info(t('infoFormCleared'));
   };
 
@@ -110,11 +105,11 @@ export const RepairRequestForm = () => {
   ];
   
   const urgencyOptions = [
-    { days: "1", label: "1 يوم (عاجل جدًا)" },
-    { days: "2", label: "2 يوم (عاجل)" },
-    { days: "3", label: "3 أيام (عادي)" },
-    { days: "5", label: "5 أيام" },
-    { days: "7", label: "7 أيام" }
+    { days: "1", label: t("urgency1") },
+    { days: "2", label: t("urgency2") },
+    { days: "3", label: t("urgency3") },
+    { days: "5", label: t("urgency5") },
+    { days: "7", label: t("urgency7") }
   ];
 
   return (
@@ -124,33 +119,33 @@ export const RepairRequestForm = () => {
         <CardHeader className="card-header-highlight">
           <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
             <Phone size={18} />
-            Customer Information
+            {t('customerInformation')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="customerName" className="text-sm font-medium">
-                Customer Name <span className="text-red-500">*</span>
+                {t('customerName')} <span className="text-red-500">*</span>
               </Label>
               <Input 
                 id="customerName" 
                 value={customerName} 
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Enter customer name" 
+                placeholder={t('enterCustomerName')}
                 required
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="phoneNumber" className="text-sm font-medium">
-                Phone Number <span className="text-red-500">*</span>
+                {t('phoneNumber')} <span className="text-red-500">*</span>
               </Label>
               <Input 
                 id="phoneNumber" 
                 value={phoneNumber} 
                 onChange={(e) => setPhoneNumber(e.target.value)} 
-                placeholder="Enter phone number"
+                placeholder={t('enterPhoneNumber')}
                 required
               />
             </div>
@@ -163,18 +158,18 @@ export const RepairRequestForm = () => {
         <CardHeader className="card-header-highlight">
           <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
             <Smartphone size={18} />
-            Device Information
+            {t('deviceInformation')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="deviceBrand" className="text-sm font-medium">
-                Device Brand <span className="text-red-500">*</span>
+                {t('deviceBrand')} <span className="text-red-500">*</span>
               </Label>
               <Select value={deviceBrand} onValueChange={setDeviceBrand} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select device brand" />
+                  <SelectValue placeholder={t('selectDeviceBrand')} />
                 </SelectTrigger>
                 <SelectContent>
                   {deviceBrands.map((brand) => (
@@ -186,36 +181,36 @@ export const RepairRequestForm = () => {
             
             <div className="space-y-2">
               <Label htmlFor="deviceModel" className="text-sm font-medium">
-                Device Model <span className="text-red-500">*</span>
+                {t('deviceModel')} <span className="text-red-500">*</span>
               </Label>
               <Input 
                 id="deviceModel" 
                 value={deviceModel} 
                 onChange={(e) => setDeviceModel(e.target.value)} 
-                placeholder="e.g. iPhone 13, Galaxy S21"
+                placeholder={t('enterDeviceModel')}
                 required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="imeiNumber" className="text-sm font-medium">
-                IMEI Number <span className="text-gray-400">(Optional)</span>
+                {t('imei')} <span className="text-gray-400">({t('optional')})</span>
               </Label>
               <Input 
                 id="imeiNumber" 
                 value={imeiNumber} 
                 onChange={(e) => setImeiNumber(e.target.value)} 
-                placeholder="Enter IMEI number"
+                placeholder={t('enterIMEI')}
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="deviceCondition" className="text-sm font-medium">
-                Device Condition <span className="text-red-500">*</span>
+                {t('deviceCondition')} <span className="text-red-500">*</span>
               </Label>
               <Select value={deviceCondition} onValueChange={setDeviceCondition} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select device condition" />
+                  <SelectValue placeholder={t('selectDeviceCondition')} />
                 </SelectTrigger>
                 <SelectContent>
                   {deviceConditions.map((condition) => (
@@ -228,13 +223,13 @@ export const RepairRequestForm = () => {
 
           <div className="space-y-2">
             <Label htmlFor="problemDescription" className="text-sm font-medium">
-              Problem Description <span className="text-red-500">*</span>
+              {t('problemDescription')} <span className="text-red-500">*</span>
             </Label>
             <Textarea 
               id="problemDescription" 
               value={problemDescription} 
               onChange={(e) => setProblemDescription(e.target.value)} 
-              placeholder="Describe the issue with the device"
+              placeholder={t('describeIssue')}
               className="min-h-[120px]"
               required
             />
@@ -247,14 +242,14 @@ export const RepairRequestForm = () => {
         <CardHeader className="card-header-highlight">
           <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
             <Wrench size={18} />
-            Repair Order Details
+            {t('repairOrderDetails')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="estimatedCost" className="text-sm font-medium">
-                Estimated Cost ($) <span className="text-red-500">*</span>
+                {t('estimatedCost')} ($) <span className="text-red-500">*</span>
               </Label>
               <Input 
                 id="estimatedCost" 
@@ -270,11 +265,11 @@ export const RepairRequestForm = () => {
             
             <div className="space-y-2">
               <Label htmlFor="urgencyDays" className="text-sm font-medium">
-                Urgency (Days) <span className="text-red-500">*</span>
+                {t('urgencyDays')} <span className="text-red-500">*</span>
               </Label>
               <Select value={urgencyDays} onValueChange={setUrgencyDays} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select urgency level" />
+                  <SelectValue placeholder={t('selectUrgencyLevel')} />
                 </SelectTrigger>
                 <SelectContent>
                   {urgencyOptions.map((option) => (
@@ -285,49 +280,18 @@ export const RepairRequestForm = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="deliveryDate" className="text-sm font-medium">
-                Expected Delivery Date <span className="text-red-500">*</span>
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="deliveryDate"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !deliveryDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {deliveryDate ? format(deliveryDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={deliveryDate}
-                    onSelect={setDeliveryDate}
-                    initialFocus
-                    disabled={(date) => date < new Date()}
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">
-                Status
+                {t('status')}
               </Label>
               <Select value={status} disabled>
                 <SelectTrigger>
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t('status')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Pending">{t('pending')}</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">New repair requests are created with pending status</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('newRequestsPending')}</p>
             </div>
           </div>
         </CardContent>
@@ -336,10 +300,10 @@ export const RepairRequestForm = () => {
       {/* Action Buttons */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={handleClearForm}>
-          Clear Form
+          {t('clearForm')}
         </Button>
         <Button type="submit" className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
-          Create Repair Order
+          {t('createRepairOrder')}
         </Button>
       </div>
     </form>
