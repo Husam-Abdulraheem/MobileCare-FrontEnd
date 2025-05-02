@@ -9,6 +9,10 @@
   "imei": "IMEI",
   "problemDescription": "وصف المشكلة",
   "deviceCondition": "حالة الجهاز",
+  "deviceConditionGood": "جيد",
+  "deviceConditionFair": "متوسط",
+  "deviceConditionDamaged": "تالف",
+  "deviceConditionNotWorking": "لا يعمل",
   "estimatedCost": "التكلفة",
   "deliveryDate": "موعد التسليم",
   "status": "الحالة",
@@ -55,5 +59,11 @@
   "noMatchingOrders": "لا توجد طلبات مطابقة للبحث.",
   "homeIntro": "بسهولة أنشئ طلب إصلاح جديد لعميلك. املأ التفاصيل أدناه وأرسل الطلب.",
   "homeOrdersHint": "شاهد جميع طلبات الإصلاح، وتتبع حالتها، وادِر سير العمل لديك.",
-  "systemDescription": "نظام إدارة طلبات الإصلاح"
+  "systemDescription": "نظام إدارة طلبات الإصلاح",
+  "yourStatistics": "إحصائياتك",
+  "statisticsDescription": "ملخص لنشاطاتك وتكاليف الإصلاح.",
+  "totalOrders": "إجمالي الطلبات",
+  "averageRepairCost": "متوسط تكلفة الإصلاح",
+  "errorFetchStatistics": "حدث خطأ أثناء جلب الإحصائيات.",
+  "loading": "جارٍ التحميل..."
 }

@@ -9,6 +9,10 @@
   "imei": "IMEI",
   "problemDescription": "Problem Description",
   "deviceCondition": "Device Condition",
+  "deviceConditionGood": "Good",
+  "deviceConditionFair": "Fair",
+  "deviceConditionDamaged": "Damaged",
+  "deviceConditionNotWorking": "Not Working",
   "estimatedCost": "Estimated Cost",
   "deliveryDate": "Delivery Date",
   "status": "Status",
@@ -71,5 +75,11 @@
   "urgency2": "2 days (Urgent)",
   "urgency3": "3 days (Normal)",
   "urgency5": "5 days",
-  "urgency7": "7 days"
+  "urgency7": "7 days",
+  "yourStatistics": "Your Statistics",
+  "statisticsDescription": "A summary of your repair activity and costs.",
+  "totalOrders": "Total Orders",
+  "averageRepairCost": "Average Repair Cost",
+  "errorFetchStatistics": "Error fetching statistics.",
+  "loading": "Loading..."
 }

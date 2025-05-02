@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,7 @@ interface EditRepairOrderDialogProps {
 }
 
 export function EditRepairOrderDialog({ open, order, onClose, onSave }: EditRepairOrderDialogProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState(order || {});
 
   const deviceBrands = [
@@ -27,6 +29,13 @@ export function EditRepairOrderDialog({ open, order, onClose, onSave }: EditRepa
     "LG",
     "Nokia",
     "Other"
+  ];
+
+  const deviceConditions = [
+    { value: "Good", label: t("deviceConditionGood") },
+    { value: "Fair", label: t("deviceConditionFair") },
+    { value: "Damaged", label: t("deviceConditionDamaged") },
+    { value: "Not Working", label: t("deviceConditionNotWorking") }
   ];
 
   useEffect(() => {
@@ -63,20 +72,17 @@ export function EditRepairOrderDialog({ open, order, onClose, onSave }: EditRepa
           <Input value={form.model || ""} onChange={e => handleChange("model", e.target.value)} placeholder="الموديل" />
           <Input value={form.imei || ""} onChange={e => handleChange("imei", e.target.value)} placeholder="IMEI" />
           <Textarea value={form.problemDescription || ""} onChange={e => handleChange("problemDescription", e.target.value)} placeholder="المشكلة" />
-          <Input value={form.deviceCondition || ""} onChange={e => handleChange("deviceCondition", e.target.value)} placeholder="حالة الجهاز" />
-          <Input type="number" value={form.estimatedCost || 0} onChange={e => handleChange("estimatedCost", e.target.value)} placeholder="التكلفة" />
-          <Input value={form.userFullName || ""} onChange={e => handleChange("userFullName", e.target.value)} placeholder="الفني" />
-          <Select value={form.status || "Pending"} onValueChange={v => handleChange("status", v)}>
-            <SelectTrigger className="w-32">
-              <SelectValue>{form.status}</SelectValue>
+          <Select value={form.deviceCondition || ""} onValueChange={v => handleChange("deviceCondition", v)}>
+            <SelectTrigger>
+              <SelectValue>{deviceConditions.find(dc => dc.value === form.deviceCondition)?.label || t("deviceCondition")}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Pending">قيد الانتظار</SelectItem>
-              <SelectItem value="InProgress">قيد التنفيذ</SelectItem>
-              <SelectItem value="Ready">جاهز</SelectItem>
-              <SelectItem value="Collected">تم الاستلام</SelectItem>
+              {deviceConditions.map((condition) => (
+                <SelectItem key={condition.value} value={condition.value}>{condition.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
+          <Input type="number" value={form.estimatedCost || 0} onChange={e => handleChange("estimatedCost", e.target.value)} placeholder="التكلفة" />
         </div>
         <DialogFooter>
           <Button onClick={() => onSave(form)} className="bg-blue-600" disabled={!isValid}>حفظ</Button>

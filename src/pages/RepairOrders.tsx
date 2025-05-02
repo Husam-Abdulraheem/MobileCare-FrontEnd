@@ -105,6 +105,10 @@ const RepairOrders = () => {
     const matchesStatus = statusFilter === "all" ? true : order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Filter out collected orders for main table
+  const activeOrders = filteredOrders.filter(order => order.status !== "Collected");
+  const collectedOrders = filteredOrders.filter(order => order.status === "Collected");
   
   // تغيير حالة الطلب
   const handleStatusChange = (orderId: string, newStatus: "Pending" | "InProgress" | "Ready" | "Collected") => {
@@ -188,6 +192,20 @@ const RepairOrders = () => {
       toast.error(t('errorOrderUpdate'));
     }
   };
+
+  // Delete order handler
+  const handleDeleteOrder = async (orderId: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.delete(`https://localhost:7042/api/RepairOrders/delete-order/${orderId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      setOrders(orders.filter(order => order.id !== orderId));
+      toast.success(t('successOrderDeleted'));
+    } catch (error) {
+      toast.error(t('errorOrderDelete'));
+    }
+  };
   
   // لون الحالة
   const getStatusColor = (status: string) => {
@@ -240,35 +258,34 @@ const RepairOrders = () => {
             </Select>
           </div>
         </div>
-        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
+        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md mb-8">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold">{t('id') || 'رقم الطلب'}</TableHead>
-                  <TableHead>{t('customerName')}</TableHead>
-                  <TableHead>{t('phoneNumber')}</TableHead>
-                  <TableHead>{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
-                  <TableHead>{t('problemDescription')}</TableHead>
-                  <TableHead>{t('deviceCondition')}</TableHead>
-                  <TableHead>{t('estimatedCost')}</TableHead>
-                  <TableHead>{t('deliveryDate')}</TableHead>
-                  <TableHead>{t('status')}</TableHead>
-                  <TableHead>{t('technician')}</TableHead>
-                  <TableHead>{t('actions')}</TableHead>
+                  <TableHead className="font-bold w-16 text-center">{t('id')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('phoneNumber')}</TableHead>
+                  <TableHead className="min-w-[180px]">{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
+                  <TableHead className="min-w-[180px]">{t('problemDescription')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('deviceCondition')}</TableHead>
+                  <TableHead className="min-w-[100px] text-right">{t('estimatedCost')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('deliveryDate')}</TableHead>
+                  <TableHead className="min-w-[100px]">{t('status')}</TableHead>
+                  <TableHead className="w-32 text-center">{t('actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.length === 0 ? (
+                {activeOrders.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       {t('noMatchingOrders')}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredOrders.map((order) => (
-                    <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
-                      <TableCell className="font-medium">{order.id}</TableCell>
+                  activeOrders.map((order) => (
+                    <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition group">
+                      <TableCell className="font-medium text-center">{order.id}</TableCell>
                       <TableCell>{order.customerName}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.phoneNumber}</TableCell>
                       <TableCell>
@@ -303,9 +320,13 @@ const RepairOrders = () => {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell>{order.technicianId}</TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="outline" onClick={() => startEdit(order)}>{t('edit')}</Button>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center gap-2">
+                          <Button size="sm" variant="outline" onClick={() => startEdit(order)}>{t('edit')}</Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteOrder(order.id)}>
+                            {t('delete')}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -314,6 +335,53 @@ const RepairOrders = () => {
             </Table>
           </div>
         </div>
+        {/* Collected Orders Table */}
+        {collectedOrders.length > 0 && (
+          <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
+            <div className="p-4 font-bold text-lg text-green-700 dark:text-green-300">{t('collectedOrders')}</div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-bold w-16 text-center">{t('id')}</TableHead>
+                    <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
+                    <TableHead className="min-w-[120px]">{t('phoneNumber')}</TableHead>
+                    <TableHead className="min-w-[180px]">{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
+                    <TableHead className="min-w-[180px]">{t('problemDescription')}</TableHead>
+                    <TableHead className="min-w-[120px]">{t('deviceCondition')}</TableHead>
+                    <TableHead className="min-w-[100px] text-right">{t('estimatedCost')}</TableHead>
+                    <TableHead className="min-w-[120px]">{t('deliveryDate')}</TableHead>
+                    <TableHead className="min-w-[100px]">{t('status')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {collectedOrders.map((order) => (
+                    <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition group">
+                      <TableCell className="font-medium text-center">{order.id}</TableCell>
+                      <TableCell>{order.customerName}</TableCell>
+                      <TableCell dir="ltr" className="text-right">{order.phoneNumber}</TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-blue-700 dark:text-blue-300">{order.deviceBrand}</span> {order.deviceModel}
+                        {order.imeiNumber && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">IMEI: {order.imeiNumber}</div>
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <div className="truncate">{order.problemDescription}</div>
+                      </TableCell>
+                      <TableCell>{order.deviceCondition}</TableCell>
+                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
+                      <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
+                      <TableCell>
+                        <span className={`w-32 ${getStatusColor(order.status)}`}>{translateStatus(order.status)}</span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
         <EditRepairOrderDialog
           open={editDialogOpen}
           order={editingOrder}

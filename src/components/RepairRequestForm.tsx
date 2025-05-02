@@ -40,7 +40,6 @@ export const RepairRequestForm = () => {
   const [problemDescription, setProblemDescription] = useState("");
   const [deviceCondition, setDeviceCondition] = useState("");
   const [estimatedCost, setEstimatedCost] = useState("");
-  const [urgencyDays, setUrgencyDays] = useState("3");
   const [status] = useState("Pending");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +50,17 @@ export const RepairRequestForm = () => {
       return;
     }
     try {
-      const userId = 1;
+      // Get userId from JWT token in localStorage
+      const token = localStorage.getItem("token");
+      let userId = 1;
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          userId = payload.sub ? Number(payload.sub) : 1;
+        } catch (e) {
+          userId = 1;
+        }
+      }
       await axios.post("https://localhost:7042/api/RepairOrders/create-order", {
         customerName,
         phoneNumber,
@@ -63,8 +72,8 @@ export const RepairRequestForm = () => {
         estimatedCost: Number(estimatedCost),
         userId
       });
-      toast.success(t('successOrderCreated'));
       handleClearForm();
+      toast.success(t('successOrderCreated'));
     } catch (error) {
       toast.error(t('errorOrderCreate'));
     }
@@ -79,7 +88,6 @@ export const RepairRequestForm = () => {
     setProblemDescription("");
     setDeviceCondition("");
     setEstimatedCost("");
-    setUrgencyDays("3");
     toast.info(t('infoFormCleared'));
   };
 
@@ -102,14 +110,6 @@ export const RepairRequestForm = () => {
     "Fair",
     "Damaged",
     "Not Working"
-  ];
-  
-  const urgencyOptions = [
-    { days: "1", label: t("urgency1") },
-    { days: "2", label: t("urgency2") },
-    { days: "3", label: t("urgency3") },
-    { days: "5", label: t("urgency5") },
-    { days: "7", label: t("urgency7") }
   ];
 
   return (
@@ -261,22 +261,6 @@ export const RepairRequestForm = () => {
                 placeholder="0.00"
                 required
               />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="urgencyDays" className="text-sm font-medium">
-                {t('urgencyDays')} <span className="text-red-500">*</span>
-              </Label>
-              <Select value={urgencyDays} onValueChange={setUrgencyDays} required>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('selectUrgencyLevel')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {urgencyOptions.map((option) => (
-                    <SelectItem key={option.days} value={option.days}>{option.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             
             <div className="space-y-2">
