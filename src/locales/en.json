@@ -76,10 +76,12 @@
   "urgency3": "3 days (Normal)",
   "urgency5": "5 days",
   "urgency7": "7 days",
-  "yourStatistics": "Your Statistics",
-  "statisticsDescription": "A summary of your repair activity and costs.",
+  "Statistics": "Statistics",
+  "statisticsDescription": "View detailed statistics and analytics for your repair orders.",
+  "goToStatistics": "Go to Statistics",
   "totalOrders": "Total Orders",
   "averageRepairCost": "Average Repair Cost",
+  "totalRepairCost": "Total Repair Cost",
   "errorFetchStatistics": "Error fetching statistics.",
   "loading": "Loading..."
 }

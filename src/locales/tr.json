@@ -60,10 +60,12 @@
   "urgency3": "3 gün (Normal)",
   "urgency5": "5 gün",
   "urgency7": "7 gün",
-  "yourStatistics": "İstatistikleriniz",
-  "statisticsDescription": "Onarım aktivitelerinizin ve maliyetlerinizin özeti.",
+  "Statistics": "İstatistikleriniz",
+  "statisticsDescription": "Onarım siparişlerinize ait detaylı istatistik ve analizleri görüntüleyin.",
+  "goToStatistics": "İstatistiklere git",
   "totalOrders": "Toplam Talep",
   "averageRepairCost": "Ortalama Onarım Maliyeti",
+  "totalRepairCost": "Toplam Onarım Maliyeti",
   "errorFetchStatistics": "İstatistikler alınırken hata oluştu.",
   "loading": "Yükleniyor..."
 }

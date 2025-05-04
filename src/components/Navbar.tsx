@@ -33,7 +33,7 @@ export const Navbar = ({ showHome = true, showOrders = true, showLogout = true, 
           <p className="text-blue-100 dark:text-gray-300 mt-1 text-sm">{t('systemDescription')}</p>
         </div>
       </div>
-      <div className="flex items-center gap-2 mt-4 md:mt-0">
+      <div className="flex flex-col-reverse sm:flex-row items-center gap-2 mt-4 md:mt-0">
         {showHome && location.pathname !== "/" && (
           <Link to="/">
             <Button variant="ghost" className="flex items-center gap-2 text-white hover:bg-blue-500">

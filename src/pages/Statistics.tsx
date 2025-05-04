@@ -3,11 +3,13 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
-import { BarChart2, ClipboardList } from "lucide-react";
+import { BarChart2, ClipboardList, ChartNoAxesCombined } from "lucide-react";
 
 const Statistics = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<{ orderCount: number; avgCost: number } | null>(null);
+  const [total, setTotal] = useState<{ totalRevenue: number } | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -26,6 +28,16 @@ const Statistics = () => {
       .get(`https://localhost:7042/api/RepairOrders/user-stats/${uid}`)
       .then((res) => {
         setStats(res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(t("errorFetchStatistics") || "Error fetching statistics");
+        setLoading(false);
+      });
+      axios
+      .get(`https://localhost:7042/api/RepairOrders/user-revenue/${uid}`)
+      .then((res) => {
+        setTotal(res.data);
         setLoading(false);
       })
       .catch(() => {
@@ -73,7 +85,18 @@ const Statistics = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 transition-all duration-500">
-                  {stats.avgCost?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $
+                  {stats?.avgCost?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-xl border-blue-200 bg-white/80 dark:bg-blue-950/60 hover:scale-[1.03] transition-transform">
+              <CardHeader className="flex flex-row items-center gap-3">
+                <ChartNoAxesCombined className="text-blue-600 dark:text-blue-300 w-8 h-8" />
+                <CardTitle className="text-lg">{t("totalRepairCost") || "Total Repair Cost"}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 transition-all duration-500">
+                  {total?.totalRevenue?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $
                 </div>
               </CardContent>
             </Card>

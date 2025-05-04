@@ -60,10 +60,12 @@
   "homeIntro": "بسهولة أنشئ طلب إصلاح جديد لعميلك. املأ التفاصيل أدناه وأرسل الطلب.",
   "homeOrdersHint": "شاهد جميع طلبات الإصلاح، وتتبع حالتها، وادِر سير العمل لديك.",
   "systemDescription": "نظام إدارة طلبات الإصلاح",
-  "yourStatistics": "إحصائياتك",
-  "statisticsDescription": "ملخص لنشاطاتك وتكاليف الإصلاح.",
+  "Statistics": "إحصائياتك",
+  "statisticsDescription": "اطلع على الإحصائيات والتحليلات التفصيلية لطلبات الإصلاح الخاصة بك.",
+  "goToStatistics": "اذهب إلى الإحصائيات",
   "totalOrders": "إجمالي الطلبات",
   "averageRepairCost": "متوسط تكلفة الإصلاح",
+  "totalRepairCost": "إجمالي تكلفة الإصلاح",
   "errorFetchStatistics": "حدث خطأ أثناء جلب الإحصائيات.",
   "loading": "جارٍ التحميل..."
 }

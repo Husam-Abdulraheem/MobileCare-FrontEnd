@@ -39,9 +39,9 @@ const Index = () => {
           {/* Statistics Navigation Card */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 flex flex-col items-center mt-2">
             <Wrench size={32} className="text-purple-500 mb-2" />
-            <h3 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">{t("statistics")}</h3>
+            <h3 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">{t("Statistics")}</h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm text-center">
-              {t("statisticsHint", { defaultValue: "View detailed statistics and analytics for your repair orders." })}
+              {t("statisticsDescription", { defaultValue: "View detailed statistics and analytics for your repair orders." })}
             </p>
             <Link to="/statistics" className="w-full">
               <Button className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 text-white font-bold flex items-center gap-2 justify-center">
