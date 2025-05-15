@@ -86,5 +86,7 @@
   "loading": "Loading...",
   "trackCode": "Track Code",
   "lastUpdatedAt": "Last Updated At",
-  "deviceReadyMessage": "Your device is ready for pickup! Please visit our shop to collect it."
+  "deviceReadyMessage": "Your device is ready for pickup! Please visit our shop to collect it.",
+  "showQr": "Show QR",
+  "scanQrToTrack": "Scan this QR code to track your order"
 }

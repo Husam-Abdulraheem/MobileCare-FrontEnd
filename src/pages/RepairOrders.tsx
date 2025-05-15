@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { EditRepairOrderDialog } from "@/components/EditRepairOrderDialog";
 import { useTranslation } from 'react-i18next';
 import { Navbar } from "@/components/Navbar";
+import { QRCodeSVG } from 'qrcode.react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -52,6 +54,9 @@ const RepairOrders = () => {
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<any | null>(null);
+
+  const [qrOpen, setQrOpen] = useState(false);
+  const [qrTrackCode, setQrTrackCode] = useState<string | null>(null);
 
   useEffect(() => {
     // Get userId from JWT token in localStorage
@@ -328,6 +333,14 @@ const RepairOrders = () => {
                           <Button size="sm" variant="destructive" onClick={() => handleDeleteOrder(order.id)}>
                             {t('delete')}
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => { setQrTrackCode(order.trackCode); setQrOpen(true); }}
+                            disabled={!order.trackCode}
+                          >
+                            {t('showQr')}
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -390,6 +403,20 @@ const RepairOrders = () => {
           onClose={() => { setEditDialogOpen(false); setEditingOrder(null); }}
           onSave={handleEditSave}
         />
+        <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('trackCode')}</DialogTitle>
+            </DialogHeader>
+            {qrTrackCode && (
+              <div className="flex flex-col items-center gap-4">
+                <QRCodeSVG value={`${window.location.origin}/track?code=${qrTrackCode}`} size={200} />
+                <div className="text-center text-sm text-gray-600">{t('scanQrToTrack')}</div>
+                <div className="text-xs text-gray-400 break-all">{`${window.location.origin}/track?code=${qrTrackCode}`}</div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

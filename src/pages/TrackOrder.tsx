@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 
 const TrackOrder = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [trackCode, setTrackCode] = useState("");
   const [order, setOrder] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setOrder(null);
     setError("");
     if (!trackCode.trim()) {
@@ -30,6 +32,28 @@ const TrackOrder = () => {
       setLoading(false);
     }
   };
+
+  // On mount, check for code in URL and auto-fetch if present
+  useEffect(() => {
+    const codeFromUrl = searchParams.get("code");
+    if (codeFromUrl) {
+      setTrackCode(codeFromUrl);
+      // Auto-fetch order
+      (async () => {
+        setOrder(null);
+        setError("");
+        setLoading(true);
+        try {
+          const res = await axios.get(`https://localhost:7042/api/Customer/track-order/${codeFromUrl}`);
+          setOrder(res.data);
+        } catch (err: any) {
+          setError(t("notFoundDescription") || "Order not found.");
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [searchParams, t]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 px-4 py-10">
