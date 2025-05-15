@@ -13,7 +13,7 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Home, Search, Filter, User, Phone, Smartphone, FileText, DollarSign, Calendar, Clock, LogOut, LayoutGrid, ListFilter } from "lucide-react";
+import { Home, Search, Filter, User, Phone, Smartphone, FileText, DollarSign, Calendar, Clock, LogOut, LayoutGrid, ListFilter, Pencil, Trash2, QrCode } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { Navbar } from "@/components/Navbar";
 import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -328,19 +329,39 @@ const RepairOrders = () => {
                         </Select>
                       </TableCell>
                       <TableCell className="text-center">
-                        <div className="flex justify-center gap-2">
-                          <Button size="sm" variant="outline" onClick={() => startEdit(order)}>{t('edit')}</Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDeleteOrder(order.id)}>
-                            {t('delete')}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => { setQrTrackCode(order.trackCode); setQrOpen(true); }}
-                            disabled={!order.trackCode}
-                          >
-                            {t('showQr')}
-                          </Button>
+                        <div className="flex justify-center gap-1">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button size="icon" variant="outline" onClick={() => startEdit(order)} aria-label={t('edit')}>
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t('edit')}</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button size="icon" variant="destructive" onClick={() => handleDeleteOrder(order.id)} aria-label={t('delete')}>
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t('delete')}</TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  variant="secondary"
+                                  onClick={() => { setQrTrackCode(order.trackCode); setQrOpen(true); }}
+                                  aria-label={t('showQr')}
+                                  disabled={!order.trackCode}
+                                >
+                                  <QrCode className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t('showQr')}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
                       </TableCell>
                     </TableRow>

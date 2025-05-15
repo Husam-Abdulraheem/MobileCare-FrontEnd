@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const TrackOrder = () => {
   const { t } = useTranslation();
@@ -57,6 +59,10 @@ const TrackOrder = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 px-4 py-10">
+      <div className="w-full max-w-md flex justify-between items-center mb-6">
+        <ThemeToggle />
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="text-center text-blue-700 dark:text-blue-400">{t("trackCode")}</CardTitle>
@@ -87,6 +93,11 @@ const TrackOrder = () => {
               {order.status === "Collected" && (
                 <div className="mt-4 p-3 bg-green-100 text-green-800 rounded text-center font-semibold">
                   {t("deviceReadyMessage")}
+                </div>
+              )}
+              {order.status === "Ready" && (
+                <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded text-center font-semibold">
+                  {t("deviceReadyForPickup")}
                 </div>
               )}
             </div>

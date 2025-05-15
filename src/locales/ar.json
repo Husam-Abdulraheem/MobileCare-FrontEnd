@@ -70,7 +70,8 @@
   "loading": "جارٍ التحميل...",
   "trackCode": "كود التتبع",
   "lastUpdatedAt": "آخر تحديث",
-  "deviceReadyMessage": "جهازك جاهز للاستلام! يرجى زيارة المتجر لاستلامه.",
+  "deviceReadyMessage": "لقد استلمت جهازك. شكرًا لك!",
   "showQr": "عرض رمز QR",
-  "scanQrToTrack": "امسح رمز QR هذا لتتبع طلبك"
+  "scanQrToTrack": "امسح رمز QR هذا لتتبع طلبك",
+  "deviceReadyForPickup": "جهازك جاهز! يمكنك الحضور قريبًا لاستلامه."
 }
