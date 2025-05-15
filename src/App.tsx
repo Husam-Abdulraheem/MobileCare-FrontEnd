@@ -10,13 +10,14 @@ import NotFound from "./pages/NotFound";
 import RepairOrders from "./pages/RepairOrders";
 import Login from "./pages/Login";
 import Statistics from "./pages/Statistics";
+import TrackOrder from "./pages/TrackOrder";
 
 const queryClient = new QueryClient();
 
 // Auth context
 export const AuthContext = createContext({
   isAuthenticated: false,
-  setIsAuthenticated: (_: boolean) => {},
+  setIsAuthenticated: (_: boolean) => { },
 });
 
 const App = () => {
@@ -55,6 +56,7 @@ const App = () => {
                     <Statistics />
                   </ProtectedRoute>
                 } />
+                <Route path="/track" element={<TrackOrder />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

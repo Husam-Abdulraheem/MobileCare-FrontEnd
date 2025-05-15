@@ -66,7 +66,7 @@ export const RepairRequestForm = () => {
         phoneNumber,
         deviceBrand,
         deviceModel,
-        imeiNumber,
+        imei: imeiNumber,
         problemDescription,
         deviceCondition,
         estimatedCost: Number(estimatedCost),
@@ -104,7 +104,7 @@ export const RepairRequestForm = () => {
     "Nokia",
     "Other"
   ];
-  
+
   const deviceConditions = [
     "Good",
     "Fair",
@@ -128,23 +128,23 @@ export const RepairRequestForm = () => {
               <Label htmlFor="customerName" className="text-sm font-medium">
                 {t('customerName')} <span className="text-red-500">*</span>
               </Label>
-              <Input 
-                id="customerName" 
-                value={customerName} 
+              <Input
+                id="customerName"
+                value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder={t('enterCustomerName')}
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="phoneNumber" className="text-sm font-medium">
                 {t('phoneNumber')} <span className="text-red-500">*</span>
               </Label>
-              <Input 
-                id="phoneNumber" 
-                value={phoneNumber} 
-                onChange={(e) => setPhoneNumber(e.target.value)} 
+              <Input
+                id="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder={t('enterPhoneNumber')}
                 required
               />
@@ -178,15 +178,15 @@ export const RepairRequestForm = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="deviceModel" className="text-sm font-medium">
                 {t('deviceModel')} <span className="text-red-500">*</span>
               </Label>
-              <Input 
-                id="deviceModel" 
-                value={deviceModel} 
-                onChange={(e) => setDeviceModel(e.target.value)} 
+              <Input
+                id="deviceModel"
+                value={deviceModel}
+                onChange={(e) => setDeviceModel(e.target.value)}
                 placeholder={t('enterDeviceModel')}
                 required
               />
@@ -196,14 +196,14 @@ export const RepairRequestForm = () => {
               <Label htmlFor="imeiNumber" className="text-sm font-medium">
                 {t('imei')} <span className="text-gray-400">({t('optional')})</span>
               </Label>
-              <Input 
-                id="imeiNumber" 
-                value={imeiNumber} 
-                onChange={(e) => setImeiNumber(e.target.value)} 
+              <Input
+                id="imeiNumber"
+                value={imeiNumber}
+                onChange={(e) => setImeiNumber(e.target.value)}
                 placeholder={t('enterIMEI')}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="deviceCondition" className="text-sm font-medium">
                 {t('deviceCondition')} <span className="text-red-500">*</span>
@@ -225,10 +225,10 @@ export const RepairRequestForm = () => {
             <Label htmlFor="problemDescription" className="text-sm font-medium">
               {t('problemDescription')} <span className="text-red-500">*</span>
             </Label>
-            <Textarea 
-              id="problemDescription" 
-              value={problemDescription} 
-              onChange={(e) => setProblemDescription(e.target.value)} 
+            <Textarea
+              id="problemDescription"
+              value={problemDescription}
+              onChange={(e) => setProblemDescription(e.target.value)}
               placeholder={t('describeIssue')}
               className="min-h-[120px]"
               required
@@ -251,18 +251,18 @@ export const RepairRequestForm = () => {
               <Label htmlFor="estimatedCost" className="text-sm font-medium">
                 {t('estimatedCost')} ($) <span className="text-red-500">*</span>
               </Label>
-              <Input 
-                id="estimatedCost" 
+              <Input
+                id="estimatedCost"
                 type="number"
                 min="0"
                 step="0.01"
-                value={estimatedCost} 
-                onChange={(e) => setEstimatedCost(e.target.value)} 
+                value={estimatedCost}
+                onChange={(e) => setEstimatedCost(e.target.value)}
                 placeholder="0.00"
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">
                 {t('status')}

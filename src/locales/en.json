@@ -83,5 +83,8 @@
   "averageRepairCost": "Average Repair Cost",
   "totalRepairCost": "Total Repair Cost",
   "errorFetchStatistics": "Error fetching statistics.",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "trackCode": "Track Code",
+  "lastUpdatedAt": "Last Updated At",
+  "deviceReadyMessage": "Your device is ready for pickup! Please visit our shop to collect it."
 }

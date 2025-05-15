@@ -4,13 +4,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Home, Search, Filter, User, Phone, Smartphone, FileText, DollarSign, Calendar, Clock, LogOut, LayoutGrid, ListFilter } from "lucide-react";
@@ -38,20 +38,21 @@ interface RepairOrder {
   dateCreated: Date;
   urgencyDays: number;
   technicianId: string;
+  trackCode?: string;
 }
 
 const RepairOrders = () => {
   const { t } = useTranslation();
   const [orders, setOrders] = useState<RepairOrder[]>([]);
   const navigate = useNavigate();
-  
+
   // البحث والتصفية
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<any | null>(null);
-  
+
   useEffect(() => {
     // Get userId from JWT token in localStorage
     const token = localStorage.getItem("token");
@@ -83,7 +84,8 @@ const RepairOrders = () => {
           dateCreated: item.createdAt ? new Date(item.createdAt) : new Date(),
           urgencyDays: 0,
           ProblemDescription: "",
-          technicianId: item.userFullName ?? ""
+          technicianId: item.userFullName ?? "",
+          trackCode: item.trackCode ?? ""
         }));
         setOrders(apiOrders);
       })
@@ -91,7 +93,7 @@ const RepairOrders = () => {
         toast.error(t('errorFetchOrders'));
       });
   }, []);
-  
+
   // الطلبات المعروضة بعد التصفية
   const filteredOrders = orders.filter(order => {
     const search = searchTerm.trim().toLowerCase();
@@ -109,7 +111,7 @@ const RepairOrders = () => {
   // Filter out collected orders for main table
   const activeOrders = filteredOrders.filter(order => order.status !== "Collected");
   const collectedOrders = filteredOrders.filter(order => order.status === "Collected");
-  
+
   // تغيير حالة الطلب
   const handleStatusChange = (orderId: string, newStatus: "Pending" | "InProgress" | "Ready" | "Collected") => {
     const token = localStorage.getItem("token");
@@ -206,7 +208,7 @@ const RepairOrders = () => {
       toast.error(t('errorOrderDelete'));
     }
   };
-  
+
   // لون الحالة
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -217,7 +219,7 @@ const RepairOrders = () => {
       default: return "bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300";
     }
   };
-  
+
   // Translate status 
   const translateStatus = (status: string) => {
     switch (status) {
@@ -228,7 +230,7 @@ const RepairOrders = () => {
       default: return status;
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
       <Navbar showHome={true} showOrders={false} showLogout={true} showStatistics={true} />
@@ -263,10 +265,10 @@ const RepairOrders = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold w-16 text-center">{t('id')}</TableHead>
                   <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
                   <TableHead className="min-w-[120px]">{t('phoneNumber')}</TableHead>
                   <TableHead className="min-w-[180px]">{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
+                  <TableHead className="min-w-[120px]">{t('trackCode')}</TableHead>
                   <TableHead className="min-w-[180px]">{t('problemDescription')}</TableHead>
                   <TableHead className="min-w-[120px]">{t('deviceCondition')}</TableHead>
                   <TableHead className="min-w-[100px] text-right">{t('estimatedCost')}</TableHead>
@@ -285,7 +287,6 @@ const RepairOrders = () => {
                 ) : (
                   activeOrders.map((order) => (
                     <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition group">
-                      <TableCell className="font-medium text-center">{order.id}</TableCell>
                       <TableCell>{order.customerName}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.phoneNumber}</TableCell>
                       <TableCell>
@@ -296,6 +297,7 @@ const RepairOrders = () => {
                           </div>
                         )}
                       </TableCell>
+                      <TableCell>{order.trackCode || "-"}</TableCell>
                       <TableCell className="max-w-xs">
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
@@ -303,9 +305,9 @@ const RepairOrders = () => {
                       <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
-                        <Select 
-                          value={order.status} 
-                          onValueChange={(value: "Pending" | "InProgress" | "Ready" | "Collected") => 
+                        <Select
+                          value={order.status}
+                          onValueChange={(value: "Pending" | "InProgress" | "Ready" | "Collected") =>
                             handleStatusChange(order.id, value)
                           }
                         >
@@ -343,10 +345,10 @@ const RepairOrders = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="font-bold w-16 text-center">{t('id')}</TableHead>
                     <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
                     <TableHead className="min-w-[120px]">{t('phoneNumber')}</TableHead>
                     <TableHead className="min-w-[180px]">{t('deviceBrand')} / {t('deviceModel')} / {t('imei')}</TableHead>
+                    <TableHead className="min-w-[120px]">{t('trackCode')}</TableHead>
                     <TableHead className="min-w-[180px]">{t('problemDescription')}</TableHead>
                     <TableHead className="min-w-[120px]">{t('deviceCondition')}</TableHead>
                     <TableHead className="min-w-[100px] text-right">{t('estimatedCost')}</TableHead>
@@ -357,7 +359,6 @@ const RepairOrders = () => {
                 <TableBody>
                   {collectedOrders.map((order) => (
                     <TableRow key={order.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition group">
-                      <TableCell className="font-medium text-center">{order.id}</TableCell>
                       <TableCell>{order.customerName}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.phoneNumber}</TableCell>
                       <TableCell>
@@ -366,6 +367,7 @@ const RepairOrders = () => {
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">IMEI: {order.imeiNumber}</div>
                         )}
                       </TableCell>
+                      <TableCell>{order.trackCode || "-"}</TableCell>
                       <TableCell className="max-w-xs">
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>

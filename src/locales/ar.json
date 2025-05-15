@@ -67,5 +67,8 @@
   "averageRepairCost": "متوسط تكلفة الإصلاح",
   "totalRepairCost": "إجمالي تكلفة الإصلاح",
   "errorFetchStatistics": "حدث خطأ أثناء جلب الإحصائيات.",
-  "loading": "جارٍ التحميل..."
+  "loading": "جارٍ التحميل...",
+  "trackCode": "كود التتبع",
+  "lastUpdatedAt": "آخر تحديث",
+  "deviceReadyMessage": "جهازك جاهز للاستلام! يرجى زيارة المتجر لاستلامه."
 }

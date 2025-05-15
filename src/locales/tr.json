@@ -67,5 +67,8 @@
   "averageRepairCost": "Ortalama Onarım Maliyeti",
   "totalRepairCost": "Toplam Onarım Maliyeti",
   "errorFetchStatistics": "İstatistikler alınırken hata oluştu.",
-  "loading": "Yükleniyor..."
+  "loading": "Yükleniyor...",
+  "trackCode": "Takip Kodu",
+  "lastUpdatedAt": "Son Güncellenme",
+  "deviceReadyMessage": "Cihazınız teslim almaya hazır! Lütfen mağazamıza gelerek teslim alın."
 }
