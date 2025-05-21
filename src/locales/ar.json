@@ -61,6 +61,8 @@
   "homeOrdersHint": "شاهد جميع طلبات الإصلاح، وتتبع حالتها، وادِر سير العمل لديك.",
   "systemDescription": "نظام إدارة طلبات الإصلاح",
   "Statistics": "إحصائياتك",
+  "yourStatistics": "إحصائياتك",
+  "orderCountByStatus": "عدد الطلبات حسب الحالة",
   "statisticsDescription": "اطلع على الإحصائيات والتحليلات التفصيلية لطلبات الإصلاح الخاصة بك.",
   "goToStatistics": "اذهب إلى الإحصائيات",
   "totalOrders": "إجمالي الطلبات",

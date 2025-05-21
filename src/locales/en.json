@@ -1,4 +1,6 @@
-{
+  {
+  "yourStatistics": "Your Statistics",
+  "orderCountByStatus": "Order Count by Status",
   "appTitle": "MobileCare",
   "allRepairOrders": "All Repair Orders",
   "newRepairOrder": "New Repair Order",

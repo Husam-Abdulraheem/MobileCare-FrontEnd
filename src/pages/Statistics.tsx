@@ -1,14 +1,16 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
-import { BarChart2, ClipboardList, ChartNoAxesCombined } from "lucide-react";
+import { BarChart2, ClipboardList, ChartNoAxesCombined, Clock, Loader2, CheckCircle2, PackageCheck } from "lucide-react";
 
 const Statistics = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState<{ orderCount: number; avgCost: number } | null>(null);
   const [total, setTotal] = useState<{ totalRevenue: number } | null>(null);
+  const [orderStatusCounts, setOrderStatusCounts] = useState<Array<{ status: string; totalOrders: number }>>([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,20 +26,16 @@ const Statistics = () => {
         uid = 1;
       }
     }
-    axios
-      .get(`https://localhost:7042/api/RepairOrders/user-stats/${uid}`)
-      .then((res) => {
-        setStats(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(t("errorFetchStatistics") || "Error fetching statistics");
-        setLoading(false);
-      });
-      axios
-      .get(`https://localhost:7042/api/RepairOrders/user-revenue/${uid}`)
-      .then((res) => {
-        setTotal(res.data);
+    setLoading(true);
+    Promise.all([
+      axios.get(`https://localhost:7042/api/RepairOrders/user-stats/${uid}`),
+      axios.get(`https://localhost:7042/api/RepairOrders/user-revenue/${uid}`),
+      axios.get(`https://localhost:7042/api/RepairOrders/user-order-count-by-status/${uid}`)
+    ])
+      .then(([statsRes, totalRes, statusRes]) => {
+        setStats(statsRes.data);
+        setTotal(totalRes.data);
+        setOrderStatusCounts(statusRes.data);
         setLoading(false);
       })
       .catch(() => {
@@ -47,60 +45,109 @@ const Statistics = () => {
   }, [t]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800">
-      <Navbar showHome={true} showOrders={true} showLogout={true} showStatistics={false} />
-      <main className="max-w-3xl mx-auto px-4 py-12 flex flex-col gap-8">
-        <h1 className="text-3xl font-extrabold text-center mb-2 text-blue-900 dark:text-blue-200 animate-fade-in">
-          {t("yourStatistics") || "Your Statistics"}
-        </h1>
-        <p className="text-center text-muted-foreground mb-6">
-          {t("statisticsDescription") || "A summary of your repair activity and costs."}
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 dark:from-gray-900 dark:to-blue-950">
+      <Navbar showHome showOrders showLogout showStatistics={false} />
+      <main className="max-w-5xl mx-auto px-2 md:px-8 py-10 flex flex-col gap-10">
+        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 animate-fade-in">
+          <div>
+            <h1 className="text-4xl font-extrabold text-blue-900 dark:text-blue-200 mb-2">{t("yourStatistics")}</h1>
+            <p className="text-muted-foreground text-lg">{t("statisticsDescription")}</p>
+          </div>
+        </section>
         {loading ? (
           <div className="flex justify-center items-center min-h-[200px]">
             <svg className="animate-spin h-8 w-8 text-blue-500" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
-            <span className="ml-4 text-lg">{t("loading") || "Loading..."}</span>
+            <span className="ml-4 text-lg">{t("loading")}</span>
           </div>
         ) : error ? (
           <Card className="shadow-lg border-red-200 bg-red-50 dark:bg-red-900/30 animate-fade-in">
             <CardContent className="text-red-600 py-8 text-center font-semibold">{error}</CardContent>
           </Card>
         ) : stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
-            <Card className="shadow-xl border-blue-200 bg-white/80 dark:bg-blue-950/60 hover:scale-[1.03] transition-transform">
-              <CardHeader className="flex flex-row items-center gap-3">
-                <ClipboardList className="text-blue-600 dark:text-blue-300 w-8 h-8" />
-                <CardTitle className="text-lg">{t("totalOrders") || "Total Orders"}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 transition-all duration-500">
-                  {stats.orderCount}
+          <>
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+              <Card className="shadow-xl border-blue-200 bg-white/90 dark:bg-blue-950/70 hover:scale-[1.03] transition-transform">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <ClipboardList className="text-blue-600 dark:text-blue-300 w-10 h-10" />
+                  <div>
+                    <CardTitle className="text-lg font-bold text-blue-900 dark:text-blue-200">{t("totalOrders")}</CardTitle>
+                    <div className="text-3xl font-extrabold text-blue-700 dark:text-blue-100 mt-1">{stats.orderCount}</div>
+                  </div>
+                </CardHeader>
+              </Card>
+              <Card className="shadow-xl border-blue-200 bg-white/90 dark:bg-blue-950/70 hover:scale-[1.03] transition-transform">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <BarChart2 className="text-blue-600 dark:text-blue-300 w-10 h-10" />
+                  <div>
+                    <CardTitle className="text-lg font-bold text-blue-900 dark:text-blue-200">{t("averageRepairCost")}</CardTitle>
+                    <div className="text-3xl font-extrabold text-blue-700 dark:text-blue-100 mt-1">{stats?.avgCost?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $</div>
+                  </div>
+                </CardHeader>
+              </Card>
+              <Card className="shadow-xl border-blue-200 bg-white/90 dark:bg-blue-950/70 hover:scale-[1.03] transition-transform">
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                  <ChartNoAxesCombined className="text-blue-600 dark:text-blue-300 w-10 h-10" />
+                  <div>
+                    <CardTitle className="text-lg font-bold text-blue-900 dark:text-blue-200">{t("totalRepairCost")}</CardTitle>
+                    <div className="text-3xl font-extrabold text-blue-700 dark:text-blue-100 mt-1">{total?.totalRevenue?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $</div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </section>
+            {/* Order count by status */}
+            {orderStatusCounts.length > 0 && (
+              <section className="mt-12 animate-fade-in">
+                <h2 className="text-2xl font-bold mb-6 text-blue-900 dark:text-blue-200">{t('orderCountByStatus')}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {orderStatusCounts.map((item) => {
+                    let Icon = ClipboardList;
+                    switch (item.status) {
+                      case "Pending":
+                        Icon = Clock;
+                        break;
+                      case "InProgress":
+                        Icon = Loader2;
+                        break;
+                      case "Ready":
+                        Icon = CheckCircle2;
+                        break;
+                      case "Collected":
+                        Icon = PackageCheck;
+                        break;
+                      default:
+                        Icon = ClipboardList;
+                    }
+                    return (
+                      <Card
+                        key={item.status}
+                        className="shadow-xl border-blue-200 bg-white/90 dark:bg-blue-950/70 hover:scale-[1.03] transition-transform"
+                      >
+                        <CardHeader className="flex flex-col items-center gap-2 pb-2">
+                          <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 mb-2">
+                            <Icon className="text-blue-600 dark:text-blue-300 w-7 h-7" />
+                          </span>
+                          <CardTitle className="text-base font-semibold text-blue-700 dark:text-blue-200 text-center">
+                            {(() => {
+                              switch (item.status) {
+                                case "Pending": return t("pending") || item.status;
+                                case "InProgress": return t("inProgress") || item.status;
+                                case "Ready": return t("ready") || item.status;
+                                case "Collected": return t("collected") || item.status;
+                                default: return t(item.status.toLowerCase()) || item.status;
+                              }
+                            })()}
+                          </CardTitle>
+                          <div className="text-3xl font-extrabold text-blue-900 dark:text-blue-100 text-center mt-1">
+                            {item.totalOrders}
+                          </div>
+                        </CardHeader>
+                      </Card>
+                    );
+                  })}
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="shadow-xl border-blue-200 bg-white/80 dark:bg-blue-950/60 hover:scale-[1.03] transition-transform">
-              <CardHeader className="flex flex-row items-center gap-3">
-                <BarChart2 className="text-blue-600 dark:text-blue-300 w-8 h-8" />
-                <CardTitle className="text-lg">{t("averageRepairCost") || "Average Repair Cost"}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 transition-all duration-500">
-                  {stats?.avgCost?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="shadow-xl border-blue-200 bg-white/80 dark:bg-blue-950/60 hover:scale-[1.03] transition-transform">
-              <CardHeader className="flex flex-row items-center gap-3">
-                <ChartNoAxesCombined className="text-blue-600 dark:text-blue-300 w-8 h-8" />
-                <CardTitle className="text-lg">{t("totalRepairCost") || "Total Repair Cost"}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 transition-all duration-500">
-                  {total?.totalRevenue?.toLocaleString(undefined, { maximumFractionDigits: 2 })} $
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </section>
+            )}
+          </>
         )}
       </main>
     </div>

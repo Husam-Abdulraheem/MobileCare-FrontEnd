@@ -61,6 +61,8 @@
   "urgency5": "5 gün",
   "urgency7": "7 gün",
   "Statistics": "İstatistikleriniz",
+  "yourStatistics": "İstatistikleriniz",
+  "orderCountByStatus": "Duruma Göre Talep Sayısı",
   "statisticsDescription": "Onarım siparişlerinize ait detaylı istatistik ve analizleri görüntüleyin.",
   "goToStatistics": "İstatistiklere git",
   "totalOrders": "Toplam Talep",
