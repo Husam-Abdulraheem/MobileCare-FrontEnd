@@ -50,30 +50,29 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">MobileCare</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">{t('appTitle')}</h1>
           <ThemeToggle />
           <LanguageSwitcher />
         </div>
-        
         <Card className="w-full">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center flex justify-center items-center gap-2">
               <LogIn size={24} className="text-blue-600" />
-              تسجيل الدخول
+              {t('login')}
             </CardTitle>
             <CardDescription className="text-center">
-              أدخل بيانات الدخول للوصول إلى نظام إدارة طلبات الإصلاح
+              {t('systemDescription')}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-right block">اسم المستخدم</Label>
+                <Label htmlFor="email" className="text-right block">{t('username')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                   <Input
                     id="email"
-                    placeholder="أدخل اسم المستخدم"
+                    placeholder={t('username')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
@@ -82,7 +81,7 @@ const Login = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-right block">كلمة المرور</Label>
+                <Label htmlFor="password" className="text-right block">{t('password')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                   <Input
@@ -103,18 +102,11 @@ const Login = () => {
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={isLoading}
               >
-                {isLoading ? "جاري تسجيل الدخول..." : "دخول"}
+                {isLoading ? t('loading') : t('login')}
               </Button>
             </CardFooter>
           </form>
         </Card>
-
-        <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>للتجربة استخدم:</p>
-          <p>اسم المستخدم: admin | كلمة المرور: admin123</p>
-          <p>أو</p>
-          <p>اسم المستخدم: tech | كلمة المرور: tech123</p>
-        </div>
       </div>
     </div>
   );
