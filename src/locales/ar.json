@@ -75,5 +75,6 @@
   "deviceReadyMessage": "لقد استلمت جهازك. شكرًا لك!",
   "showQr": "عرض رمز QR",
   "scanQrToTrack": "امسح رمز QR هذا لتتبع طلبك",
-  "deviceReadyForPickup": "جهازك جاهز! يمكنك الحضور قريبًا لاستلامه."
+  "deviceReadyForPickup": "جهازك جاهز! يمكنك الحضور قريبًا لاستلامه.",
+  "editOrder": "تعديل الطلب"
 }

@@ -91,5 +91,6 @@
   "deviceReadyMessage": "You have collected your device. Thank you!",
   "showQr": "Show QR",
   "scanQrToTrack": "Scan this QR code to track your order",
-  "deviceReadyForPickup": "Your device is ready! You can come soon to pick it up."
+  "deviceReadyForPickup": "Your device is ready! You can come soon to pick it up.",
+  "editOrder": "Edit Order"
 }

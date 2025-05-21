@@ -75,5 +75,6 @@
   "deviceReadyMessage": "Cihazınız teslim almaya hazır! Lütfen mağazamıza gelerek teslim alın.",
   "showQr": "QR Göster",
   "scanQrToTrack": "Siparişinizi takip etmek için bu QR kodunu tarayın",
-  "deviceReadyForPickup": "Cihazınız hazır! Yakında gelip teslim alabilirsiniz."
+  "deviceReadyForPickup": "Cihazınız hazır! Yakında gelip teslim alabilirsiniz.",
+  "editOrder": "Talebi Düzenle"
 }

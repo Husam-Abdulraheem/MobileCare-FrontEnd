@@ -54,7 +54,7 @@ export function EditRepairOrderDialog({ open, order, onClose, onSave }: EditRepa
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>تعديل الطلب</DialogTitle>
+          <DialogTitle>{t("editOrder")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <Input value={form.customerFullName || ""} onChange={e => handleChange("customerFullName", e.target.value)} placeholder="اسم العميل" />
@@ -85,8 +85,8 @@ export function EditRepairOrderDialog({ open, order, onClose, onSave }: EditRepa
           <Input type="number" value={form.estimatedCost || 0} onChange={e => handleChange("estimatedCost", e.target.value)} placeholder="التكلفة" />
         </div>
         <DialogFooter>
-          <Button onClick={() => onSave(form)} className="bg-blue-600" disabled={!isValid}>حفظ</Button>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
+          <Button onClick={() => onSave(form)} className="bg-blue-600" disabled={!isValid}>{t("save")}</Button>
+          <Button variant="outline" onClick={onClose}>{t("cancel")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
