@@ -1,9 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LogIn, User, Lock } from "lucide-react";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import axios from "axios";
+import { User, Lock, LogIn } from "lucide-react";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { app } from "../firebase";
 
-const Login = () => {
+const Register = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { setIsAuthenticated } = useContext(AuthContext);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast.error(t('errorRequiredFields'));
@@ -32,21 +31,20 @@ const Login = () => {
     setIsLoading(true);
     const auth = getAuth(app);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", user.email || "");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("token", await userCredential.user.getIdToken());
+      localStorage.setItem("currentUser", userCredential.user.email || "");
       setIsAuthenticated(true);
-      toast.success(t('successLogin'));
+      toast.success(t('successRegister'));
       navigate("/");
-    } catch (error) {
-      toast.error(t('errorLogin'));
+    } catch (error: any) {
+      toast.error(error.message || t('errorRegister'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleRegister = async () => {
     setIsLoading(true);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
@@ -56,10 +54,10 @@ const Login = () => {
       localStorage.setItem("token", await user.getIdToken());
       localStorage.setItem("currentUser", user.email || "");
       setIsAuthenticated(true);
-      toast.success(t('successLogin'));
+      toast.success(t('successRegister'));
       navigate("/");
-    } catch (error) {
-      toast.error(t('errorLogin'));
+    } catch (error: any) {
+      toast.error(error.message || t('errorRegister'));
     } finally {
       setIsLoading(false);
     }
@@ -77,13 +75,10 @@ const Login = () => {
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center flex justify-center items-center gap-2">
               <LogIn size={24} className="text-blue-600" />
-              {t('login')}
+              {t('register')}
             </CardTitle>
-            <CardDescription className="text-center">
-              {t('systemDescription')}
-            </CardDescription>
           </CardHeader>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegister}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-right block">{t('username')}</Label>
@@ -110,7 +105,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                 </div>
               </div>
@@ -121,7 +116,7 @@ const Login = () => {
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={isLoading}
               >
-                {isLoading ? t('loading') : t('login')}
+                {isLoading ? t('loading') : t('register')}
               </Button>
             </CardFooter>
           </form>
@@ -129,7 +124,7 @@ const Login = () => {
             <Button
               type="button"
               className="w-full bg-red-600 hover:bg-red-700 mt-2"
-              onClick={handleGoogleLogin}
+              onClick={handleGoogleRegister}
               disabled={isLoading}
             >
               {t('registerWithGoogle') || t('loginWithGoogle')}
@@ -137,7 +132,7 @@ const Login = () => {
           </CardFooter>
           <CardFooter>
             <div className="w-full text-center mt-2">
-              {t('noAccount') || "Don't have an account?"} <a href="/register" className="text-blue-600 hover:underline">{t('register')}</a>
+              {t('haveAccount', 'Already have an account?')} <a href="/login" className="text-blue-600 hover:underline">{t('login', 'Login')}</a>
             </div>
           </CardFooter>
         </Card>
@@ -146,4 +141,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

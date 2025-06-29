@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RepairOrders from "./pages/RepairOrders";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Statistics from "./pages/Statistics";
 import TrackOrder from "./pages/TrackOrder";
 
@@ -41,6 +42,7 @@ const App = () => {
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/" element={
                   <ProtectedRoute>
                     <Index />

@@ -76,5 +76,9 @@
   "showQr": "QR Göster",
   "scanQrToTrack": "Siparişinizi takip etmek için bu QR kodunu tarayın",
   "deviceReadyForPickup": "Cihazınız hazır! Yakında gelip teslim alabilirsiniz.",
-  "editOrder": "Talebi Düzenle"
+  "editOrder": "Talebi Düzenle",
+  "register": "Kayıt Ol",
+  "registerWithGoogle": "Google ile Kayıt Ol",
+  "haveAccount": "Zaten bir hesabınız var mı?",
+  "noAccount": "Hesabınız yok mu?"
 }

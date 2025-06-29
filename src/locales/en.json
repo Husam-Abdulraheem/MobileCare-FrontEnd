@@ -1,4 +1,4 @@
-  {
+{
   "yourStatistics": "Your Statistics",
   "orderCountByStatus": "Order Count by Status",
   "appTitle": "MobileCare",
@@ -92,5 +92,9 @@
   "showQr": "Show QR",
   "scanQrToTrack": "Scan this QR code to track your order",
   "deviceReadyForPickup": "Your device is ready! You can come soon to pick it up.",
-  "editOrder": "Edit Order"
+  "editOrder": "Edit Order",
+  "register": "Register",
+  "registerWithGoogle": "Register with Google",
+  "haveAccount": "Already have an account?",
+  "noAccount": "Don't have an account?"
 }

@@ -76,5 +76,9 @@
   "showQr": "عرض رمز QR",
   "scanQrToTrack": "امسح رمز QR هذا لتتبع طلبك",
   "deviceReadyForPickup": "جهازك جاهز! يمكنك الحضور قريبًا لاستلامه.",
-  "editOrder": "تعديل الطلب"
+  "editOrder": "تعديل الطلب",
+  "register": "تسجيل حساب جديد",
+  "registerWithGoogle": "سجّل باستخدام جوجل",
+  "haveAccount": "لديك حساب بالفعل؟",
+  "noAccount": "ليس لديك حساب؟"
 }
