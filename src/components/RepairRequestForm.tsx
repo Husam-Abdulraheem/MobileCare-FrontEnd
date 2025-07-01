@@ -53,9 +53,22 @@ export const RepairRequestForm = () => {
     }
     setLoading(true);
     try {
-      const auth = getAuth(app);
-      const user = auth.currentUser;
-      let userId = user ? user.uid : null;
+      // Get userId from localStorage (robust, works after reload)
+      let userId = null;
+      try {
+        const userStr = localStorage.getItem("currentUser");
+        if (userStr) {
+          const userObj = JSON.parse(userStr);
+          userId = userObj.uid;
+        }
+      } catch {}
+      if (!userId) {
+        toast.error(t('errorNotLoggedIn'));
+        setLoading(false);
+        return;
+      }
+      // Generate a unique track code (8 uppercase alphanumeric chars)
+      const trackCode = Math.random().toString(36).substring(2, 10).toUpperCase();
       await addDoc(collection(db, "repairOrders"), {
         customerName,
         phoneNumber,
@@ -67,7 +80,8 @@ export const RepairRequestForm = () => {
         estimatedCost: Number(estimatedCost),
         userId,
         status: "Pending",
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        trackCode
       });
       handleClearForm();
       toast.success(t('successOrderCreated'));
