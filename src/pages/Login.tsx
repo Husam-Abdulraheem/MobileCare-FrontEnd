@@ -35,7 +35,7 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", user.email || "");
+      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
       setIsAuthenticated(true);
       toast.success(t('successLogin'));
       navigate("/");
@@ -54,7 +54,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", user.email || "");
+      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
       setIsAuthenticated(true);
       toast.success(t('successLogin'));
       navigate("/");

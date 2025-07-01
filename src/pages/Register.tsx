@@ -33,7 +33,7 @@ const Register = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       localStorage.setItem("token", await userCredential.user.getIdToken());
-      localStorage.setItem("currentUser", userCredential.user.email || "");
+      localStorage.setItem("currentUser", JSON.stringify({ uid: userCredential.user.uid, email: userCredential.user.email }));
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
       navigate("/");
@@ -52,7 +52,7 @@ const Register = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", user.email || "");
+      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
       navigate("/");

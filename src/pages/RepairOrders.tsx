@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,9 @@ import { Navbar } from "@/components/Navbar";
 import { QRCodeSVG } from 'qrcode.react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db, updateOrderStatus, deleteOrder } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 // نوع البيانات للطلبات
 interface RepairOrder {
@@ -60,45 +62,62 @@ const RepairOrders = () => {
   const [qrTrackCode, setQrTrackCode] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get userId from JWT token in localStorage
-    const token = localStorage.getItem("token");
-    let userId = 0;
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        userId = payload.sub ? Number(payload.sub) : 0;
-      } catch (e) {
-        userId = 0;
+    console.log('RepairOrders component mounted');
+    // Get userId from Firebase Auth localStorage (currentUser)
+    let userId = null;
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        userId = user.uid;
       }
+    } catch (err) {
+      console.error('Error parsing currentUser from localStorage:', err);
     }
-    axios.get("https://localhost:7042/api/RepairOrders/get-orders-by-user", {
-      params: { userId }
-    })
-      .then(res => {
-        const apiOrders = res.data.map((item: any) => ({
-          id: item.repairOrderId?.toString() ?? "",
-          customerName: item.customerFullName ?? "",
-          phoneNumber: item.phoneNumber ?? "",
-          deviceBrand: item.brand ?? "",
-          deviceModel: item.model ?? "",
-          imeiNumber: item.imei ?? "",
-          problemDescription: item.problemDescription ?? "",
-          deviceCondition: item.deviceCondition ?? "",
-          estimatedCost: item.estimatedCost !== undefined ? Number(item.estimatedCost) : 0,
-          deliveryDate: item.updatedAt ? new Date(item.updatedAt) : new Date(),
-          status: item.status ?? "Pending",
-          dateCreated: item.createdAt ? new Date(item.createdAt) : new Date(),
-          urgencyDays: 0,
-          ProblemDescription: "",
-          technicianId: item.userFullName ?? "",
-          trackCode: item.trackCode ?? ""
-        }));
-        setOrders(apiOrders);
-      })
-      .catch(() => {
+    console.log('userId from localStorage:', userId);
+    // Remove error toast for missing userId, just skip fetch
+    if (!userId) {
+      console.warn('Skipping fetch, no userId');
+      setOrders([]);
+      return;
+    }
+    // Fetch orders from Firestore for this user
+    const fetchOrders = async () => {
+      console.log('[Firestore] Fetching orders for userId:', userId);
+      try {
+        const q = query(collection(db, "repairOrders"), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+        console.log('[Firestore] Query snapshot:', querySnapshot);
+        const fbOrders = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log('[Firestore] Order doc:', doc.id, data);
+          return {
+            id: doc.id,
+            customerName: data.customerName || "",
+            phoneNumber: data.phoneNumber || "",
+            deviceBrand: data.deviceBrand || "",
+            deviceModel: data.deviceModel || "",
+            imeiNumber: data.imei || "",
+            problemDescription: data.problemDescription || "",
+            deviceCondition: data.deviceCondition || "",
+            estimatedCost: data.estimatedCost !== undefined ? Number(data.estimatedCost) : 0,
+            deliveryDate: data.createdAt ? new Date(data.createdAt) : new Date(),
+            status: data.status || "Pending",
+            dateCreated: data.createdAt ? new Date(data.createdAt) : new Date(),
+            urgencyDays: 0,
+            technicianId: data.technicianId || "",
+            trackCode: data.trackCode || ""
+          };
+        });
+        console.log('[Firestore] Parsed orders:', fbOrders);
+        setOrders(fbOrders);
+      } catch (e) {
+        console.error('[Firestore] Error fetching orders:', e);
         toast.error(t('errorFetchOrders'));
-      });
-  }, []);
+      }
+    };
+    fetchOrders();
+  }, [t]);
 
   // الطلبات المعروضة بعد التصفية
   const filteredOrders = orders.filter(order => {
@@ -118,26 +137,17 @@ const RepairOrders = () => {
   const activeOrders = filteredOrders.filter(order => order.status !== "Collected");
   const collectedOrders = filteredOrders.filter(order => order.status === "Collected");
 
-  // تغيير حالة الطلب
-  const handleStatusChange = (orderId: string, newStatus: "Pending" | "InProgress" | "Ready" | "Collected") => {
-    const token = localStorage.getItem("token");
-    axios.put(
-      `https://localhost:7042/api/RepairOrders/update-status`,
-      {},
-      {
-        params: { repairOrderId: orderId, status: newStatus },
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      }
-    )
-      .then(() => {
-        setOrders(orders.map(order =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        ));
-        toast.success(t('successStatusUpdated'));
-      })
-      .catch(() => {
-        toast.error(t('errorStatusUpdate'));
-      });
+  // تغيير حالة الطلب (Firestore helper)
+  const handleStatusChange = async (orderId: string, newStatus: "Pending" | "InProgress" | "Ready" | "Collected") => {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      setOrders(orders.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      ));
+      toast.success(t('successStatusUpdated'));
+    } catch {
+      toast.error(t('errorStatusUpdate'));
+    }
   };
 
   // Handle logout
@@ -166,17 +176,25 @@ const RepairOrders = () => {
   };
 
   const handleEditSave = async (form: any) => {
-    const token = localStorage.getItem("token");
     if (!form.id) {
       toast.error(t('errorOrderIdMissing'));
       return;
     }
     try {
-      await axios.put(
-        `https://localhost:7042/api/RepairOrders/update-order/${form.id}`,
-        form,
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
-      );
+      const orderRef = doc(db, "repairOrders", form.id);
+      await updateDoc(orderRef, {
+        customerName: form.customerFullName,
+        phoneNumber: form.phoneNumber,
+        deviceBrand: form.brand,
+        deviceModel: form.model,
+        imei: form.imei,
+        problemDescription: form.problemDescription,
+        deviceCondition: form.deviceCondition,
+        estimatedCost: form.estimatedCost,
+        technicianId: form.userFullName,
+        status: form.status,
+        updatedAt: new Date().toISOString()
+      });
       setOrders(orders.map(order =>
         order.id === form.id ? {
           ...order,
@@ -203,11 +221,8 @@ const RepairOrders = () => {
 
   // Delete order handler
   const handleDeleteOrder = async (orderId: string) => {
-    const token = localStorage.getItem("token");
     try {
-      await axios.delete(`https://localhost:7042/api/RepairOrders/delete-order/${orderId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      await deleteOrder(orderId);
       setOrders(orders.filter(order => order.id !== orderId));
       toast.success(t('successOrderDeleted'));
     } catch (error) {

@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Check, Phone, Wrench, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import axios from "axios";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import { app, db } from "../firebase";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,27 +43,20 @@ export const RepairRequestForm = () => {
   const [deviceCondition, setDeviceCondition] = useState("");
   const [estimatedCost, setEstimatedCost] = useState("");
   const [status] = useState("Pending");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate required fields
     if (!customerName || !phoneNumber || !deviceBrand || !deviceModel || !problemDescription || !estimatedCost || !deviceCondition) {
       toast.error(t('errorRequiredFields'));
       return;
     }
+    setLoading(true);
     try {
-      // Get userId from JWT token in localStorage
-      const token = localStorage.getItem("token");
-      let userId = 1;
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          userId = payload.sub ? Number(payload.sub) : 1;
-        } catch (e) {
-          userId = 1;
-        }
-      }
-      await axios.post("https://localhost:7042/api/RepairOrders/create-order", {
+      const auth = getAuth(app);
+      const user = auth.currentUser;
+      let userId = user ? user.uid : null;
+      await addDoc(collection(db, "repairOrders"), {
         customerName,
         phoneNumber,
         deviceBrand,
@@ -70,12 +65,16 @@ export const RepairRequestForm = () => {
         problemDescription,
         deviceCondition,
         estimatedCost: Number(estimatedCost),
-        userId
+        userId,
+        status: "Pending",
+        createdAt: new Date().toISOString()
       });
       handleClearForm();
       toast.success(t('successOrderCreated'));
     } catch (error) {
       toast.error(t('errorOrderCreate'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -283,11 +282,11 @@ export const RepairRequestForm = () => {
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={handleClearForm}>
+        <Button type="button" variant="outline" onClick={handleClearForm} disabled={loading}>
           {t('clearForm')}
         </Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
-          {t('createRepairOrder')}
+        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800" disabled={loading}>
+          {loading ? t('loading') : t('createRepairOrder')}
         </Button>
       </div>
     </form>
