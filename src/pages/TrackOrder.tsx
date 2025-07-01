@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,8 +27,24 @@ const TrackOrder = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.get(`https://localhost:7042/api/Customer/track-order/${trackCode}`);
-      setOrder(res.data);
+      const q = query(collection(db, "repairOrders"), where("trackCode", "==", trackCode.trim()));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        setError(t("notFoundDescription") || "Order not found.");
+        setOrder(null);
+      } else {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        setOrder({
+          customerName: data.customerName,
+          brand: data.deviceBrand,
+          model: data.deviceModel,
+          imei: data.imei,
+          problemDescription: data.problemDescription,
+          status: data.status,
+          lastUpdatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
+        });
+      }
     } catch (err: any) {
       setError(t("notFoundDescription") || "Order not found.");
     } finally {
@@ -46,8 +63,24 @@ const TrackOrder = () => {
         setError("");
         setLoading(true);
         try {
-          const res = await axios.get(`https://localhost:7042/api/Customer/track-order/${codeFromUrl}`);
-          setOrder(res.data);
+          const q = query(collection(db, "repairOrders"), where("trackCode", "==", codeFromUrl.trim()));
+          const querySnapshot = await getDocs(q);
+          if (querySnapshot.empty) {
+            setError(t("notFoundDescription") || "Order not found.");
+            setOrder(null);
+          } else {
+            const doc = querySnapshot.docs[0];
+            const data = doc.data();
+            setOrder({
+              customerName: data.customerName,
+              brand: data.deviceBrand,
+              model: data.deviceModel,
+              imei: data.imei,
+              problemDescription: data.problemDescription,
+              status: data.status,
+              lastUpdatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
+            });
+          }
         } catch (err: any) {
           setError(t("notFoundDescription") || "Order not found.");
         } finally {
@@ -88,7 +121,15 @@ const TrackOrder = () => {
               <div><b>{t("deviceModel")}</b>: {order.model}</div>
               {order.imei && <div><b>{t("imei")}</b>: {order.imei}</div>}
               <div><b>{t("problemDescription")}</b>: {order.problemDescription}</div>
-              <div><b>{t("status")}</b>: {order.status}</div>
+              <div><b>{t("status")}</b>: {(() => {
+                switch (order.status) {
+                  case "Pending": return t("pending");
+                  case "InProgress": return t("inProgress");
+                  case "Ready": return t("ready");
+                  case "Collected": return t("collected");
+                  default: return order.status;
+                }
+              })()}</div>
               <div><b>{t("lastUpdatedAt") || "Last Updated At"}</b>: {new Date(order.lastUpdatedAt).toLocaleString()}</div>
               {order.status === "Collected" && (
                 <div className="mt-4 p-3 bg-green-100 text-green-800 rounded text-center font-semibold">

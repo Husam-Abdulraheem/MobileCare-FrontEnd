@@ -119,10 +119,10 @@ export const RepairRequestForm = () => {
   ];
 
   const deviceConditions = [
-    "Good",
-    "Fair",
-    "Damaged",
-    "Not Working"
+    { value: "Good", label: t('deviceConditionGood') },
+    { value: "Fair", label: t('deviceConditionFair') },
+    { value: "Damaged", label: t('deviceConditionDamaged') },
+    { value: "Not Working", label: t('deviceConditionNotWorking') }
   ];
 
   return (
@@ -227,7 +227,7 @@ export const RepairRequestForm = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {deviceConditions.map((condition) => (
-                    <SelectItem key={condition} value={condition}>{condition}</SelectItem>
+                    <SelectItem key={condition.value} value={condition.value}>{condition.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
