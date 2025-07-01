@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/Navbar";
@@ -16,32 +17,47 @@ const Statistics = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let uid = 1;
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        uid = payload.sub ? Number(payload.sub) : 1;
-      } catch {
-        uid = 1;
-      }
-    }
     setLoading(true);
-    Promise.all([
-      axios.get(`https://localhost:7042/api/RepairOrders/user-stats/${uid}`),
-      axios.get(`https://localhost:7042/api/RepairOrders/user-revenue/${uid}`),
-      axios.get(`https://localhost:7042/api/RepairOrders/user-order-count-by-status/${uid}`)
-    ])
-      .then(([statsRes, totalRes, statusRes]) => {
-        setStats(statsRes.data);
-        setTotal(totalRes.data);
-        setOrderStatusCounts(statusRes.data);
+    setError("");
+    // Get userId from localStorage (robust, works after reload)
+    let userId = null;
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      if (userStr) {
+        const userObj = JSON.parse(userStr);
+        userId = userObj.uid;
+      }
+    } catch {}
+    if (!userId) {
+      setError(t("errorNotLoggedIn") || "Not logged in");
+      setLoading(false);
+      return;
+    }
+    const fetchStats = async () => {
+      try {
+        const q = query(collection(db, "repairOrders"), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+        const orders = querySnapshot.docs.map(doc => doc.data());
+        // Total orders and average cost
+        const orderCount = orders.length;
+        const totalCost = orders.reduce((sum, o) => sum + (Number(o.estimatedCost) || 0), 0);
+        const avgCost = orderCount > 0 ? totalCost / orderCount : 0;
+        setStats({ orderCount, avgCost });
+        setTotal({ totalRevenue: totalCost });
+        // Count by status
+        const statusMap: Record<string, number> = {};
+        orders.forEach(o => {
+          const status = o.status || "Pending";
+          statusMap[status] = (statusMap[status] || 0) + 1;
+        });
+        setOrderStatusCounts(Object.entries(statusMap).map(([status, totalOrders]) => ({ status, totalOrders })));
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
         setError(t("errorFetchStatistics") || "Error fetching statistics");
         setLoading(false);
-      });
+      }
+    };
+    fetchStats();
   }, [t]);
 
   return (
