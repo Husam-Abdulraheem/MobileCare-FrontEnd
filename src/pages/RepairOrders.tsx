@@ -252,6 +252,17 @@ const RepairOrders = () => {
     }
   };
 
+  // Translate device condition
+  const translateDeviceCondition = (condition: string) => {
+    switch (condition) {
+      case "Good": return t('deviceConditionGood');
+      case "Fair": return t('deviceConditionFair');
+      case "Damaged": return t('deviceConditionDamaged');
+      case "Not Working": return t('deviceConditionNotWorking');
+      default: return condition;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
       <Navbar showHome={true} showOrders={false} showLogout={true} showStatistics={true} />
@@ -322,7 +333,7 @@ const RepairOrders = () => {
                       <TableCell className="max-w-xs">
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
-                      <TableCell>{order.deviceCondition}</TableCell>
+                      <TableCell>{translateDeviceCondition(order.deviceCondition)}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
@@ -420,7 +431,7 @@ const RepairOrders = () => {
                       <TableCell className="max-w-xs">
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
-                      <TableCell>{order.deviceCondition}</TableCell>
+                      <TableCell>{translateDeviceCondition(order.deviceCondition)}</TableCell>
                       <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
