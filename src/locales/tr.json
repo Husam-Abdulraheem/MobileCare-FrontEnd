@@ -84,5 +84,6 @@
   "noAccount": "Hesabınız yok mu?",
   "print": "Yazdır",
   "repairOrderReceipt": "Onarım Talebi Makbuzu",
-  "printDate": "Yazdırma Tarihi"
+  "printDate": "Yazdırma Tarihi",
+  "collectedOrders": "Teslim Alınan Talepler"
 }

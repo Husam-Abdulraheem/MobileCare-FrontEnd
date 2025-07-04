@@ -100,5 +100,6 @@
   "noAccount": "Don't have an account?",
   "print": "Print",
   "repairOrderReceipt": "Repair Order Receipt",
-  "printDate": "Print Date"
+  "printDate": "Print Date",
+  "collectedOrders": "Collected Orders"
 }

@@ -412,7 +412,7 @@ const RepairOrders = () => {
         {/* Collected Orders Table */}
         {collectedOrders.length > 0 && (
           <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
-            <div className="p-4 font-bold text-lg text-green-700 dark:text-green-300">{t('collectedOrders')}</div>
+            <div className="p-4 font-bold text-lg text-blue-700 dark:text-green-300">{t('collectedOrders')}</div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>

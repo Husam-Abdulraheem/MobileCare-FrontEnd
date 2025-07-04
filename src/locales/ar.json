@@ -84,5 +84,6 @@
   "noAccount": "ليس لديك حساب؟",
   "print": "طباعة",
   "repairOrderReceipt": "إيصال طلب الإصلاح",
-  "printDate": "تاريخ الطباعة"
+  "printDate": "تاريخ الطباعة",
+  "collectedOrders": "الطلبات التي تم استلامها"
 }
