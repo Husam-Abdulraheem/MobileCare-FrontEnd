@@ -81,5 +81,8 @@
   "register": "تسجيل حساب جديد",
   "registerWithGoogle": "سجّل باستخدام جوجل",
   "haveAccount": "لديك حساب بالفعل؟",
-  "noAccount": "ليس لديك حساب؟"
+  "noAccount": "ليس لديك حساب؟",
+  "print": "طباعة",
+  "repairOrderReceipt": "إيصال طلب الإصلاح",
+  "printDate": "تاريخ الطباعة"
 }

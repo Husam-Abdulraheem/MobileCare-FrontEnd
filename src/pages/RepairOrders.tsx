@@ -337,22 +337,34 @@ const RepairOrders = () => {
                       <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
-                        <Select
-                          value={order.status}
-                          onValueChange={(value: "Pending" | "InProgress" | "Ready" | "Collected") =>
-                            handleStatusChange(order.id, value)
-                          }
-                        >
-                          <SelectTrigger className={`w-32 ${getStatusColor(order.status)}`}>
-                            <SelectValue>{translateStatus(order.status)}</SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Pending">{t('pending')}</SelectItem>
-                            <SelectItem value="InProgress">{t('inProgress')}</SelectItem>
-                            <SelectItem value="Ready">{t('ready')}</SelectItem>
-                            <SelectItem value="Collected">{t('collected')}</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="flex flex-col gap-1 items-start">
+                          <Select
+                            value={order.status}
+                            onValueChange={(value: "Pending" | "InProgress" | "Ready" | "Collected") =>
+                              handleStatusChange(order.id, value)
+                            }
+                          >
+                            <SelectTrigger className={`w-32 ${getStatusColor(order.status)}`}>
+                              <SelectValue>{translateStatus(order.status)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Pending">{t('pending')}</SelectItem>
+                              <SelectItem value="InProgress">{t('inProgress')}</SelectItem>
+                              <SelectItem value="Ready">{t('ready')}</SelectItem>
+                              <SelectItem value="Collected">{t('collected')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {order.status === "Collected" && (
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="mt-1"
+                              onClick={(e) => { e.stopPropagation(); navigate(`/print/${order.id}`); }}
+                            >
+                              {t('print')}
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center gap-1">
@@ -436,6 +448,15 @@ const RepairOrders = () => {
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
                         <span className={`w-32 ${getStatusColor(order.status)}`}>{translateStatus(order.status)}</span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => navigate(`/print/${order.id}`)}
+                        >
+                          {t('print')}
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

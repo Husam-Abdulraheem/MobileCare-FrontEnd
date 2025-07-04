@@ -81,5 +81,8 @@
   "register": "Kayıt Ol",
   "registerWithGoogle": "Google ile Kayıt Ol",
   "haveAccount": "Zaten bir hesabınız var mı?",
-  "noAccount": "Hesabınız yok mu?"
+  "noAccount": "Hesabınız yok mu?",
+  "print": "Yazdır",
+  "repairOrderReceipt": "Onarım Talebi Makbuzu",
+  "printDate": "Yazdırma Tarihi"
 }

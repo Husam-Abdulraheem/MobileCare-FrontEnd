@@ -97,5 +97,8 @@
   "register": "Register",
   "registerWithGoogle": "Register with Google",
   "haveAccount": "Already have an account?",
-  "noAccount": "Don't have an account?"
+  "noAccount": "Don't have an account?",
+  "print": "Print",
+  "repairOrderReceipt": "Repair Order Receipt",
+  "printDate": "Print Date"
 }
