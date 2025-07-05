@@ -35,26 +35,42 @@ const Register = () => {
     const auth = getAuth(app);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      localStorage.setItem("token", await userCredential.user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: userCredential.user.uid, email: userCredential.user.email, fullName }));
-      // Save user info in Firestore (old users collection)
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
+      const user = userCredential.user;
+
+      // Save user info in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
         fullName
       });
+
       // Also save user info in a new collection (e.g., userProfiles)
-      await setDoc(doc(db, "userProfiles", userCredential.user.uid), {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
+      await setDoc(doc(db, "userProfiles", user.uid), {
+        uid: user.uid,
+        email: user.email,
         fullName,
         createdAt: new Date().toISOString()
       });
-      setIsAuthenticated(true);
+
+      // Auth state will be handled by the useAuth hook
       toast.success(t('successRegister'));
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || t('errorRegister'));
+      console.error('Registration error:', error);
+      let errorMsg = t('errorRegister');
+
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/email-already-in-use') {
+        errorMsg = t('errorEmailInUse') || 'Email already in use';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMsg = t('errorInvalidEmail') || 'Invalid email';
+      } else if (error.code === 'auth/weak-password') {
+        errorMsg = t('errorWeakPassword') || 'Password is too weak';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMsg = t('errorOperationNotAllowed') || 'Email/password accounts are not enabled';
+      }
+
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -67,13 +83,14 @@ const Register = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email, fullName: user.displayName || "" }));
+
+      // Save user info in Firestore
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName || ""
       });
+
       // Also save user info in a new collection (e.g., userProfiles)
       await setDoc(doc(db, "userProfiles", user.uid), {
         uid: user.uid,
@@ -81,11 +98,23 @@ const Register = () => {
         fullName: user.displayName || "",
         createdAt: new Date().toISOString()
       });
-      setIsAuthenticated(true);
+
+      // Auth state will be handled by the useAuth hook
       toast.success(t('successRegister'));
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || t('errorRegister'));
+      console.error('Google registration error:', error);
+      let errorMsg = t('errorRegister');
+
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMsg = t('errorPopupClosed') || 'Registration popup was closed';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMsg = t('errorPopupBlocked') || 'Registration popup was blocked. Please allow popups for this site.';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        errorMsg = t('errorAccountExists') || 'An account already exists with the same email address but different sign-in credentials.';
+      }
+
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Home, LogOut, LayoutGrid, ListFilter, Wrench, Menu } from "lucide-react";
-import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavbarProps {
   showHome?: boolean;
@@ -18,10 +18,10 @@ export const Navbar = ({ showHome = true, showOrders = true, showLogout = true, 
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    toast.success(t("logoutSuccess"));
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 

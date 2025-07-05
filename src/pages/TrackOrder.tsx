@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { getOrderByTrackCode } from "@/lib/firestore-helpers";
 
 const TrackOrder = () => {
   const { t } = useTranslation();
@@ -27,26 +26,25 @@ const TrackOrder = () => {
     }
     setLoading(true);
     try {
-      const q = query(collection(db, "repairOrders"), where("trackCode", "==", trackCode.trim()));
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
+      const orderData = await getOrderByTrackCode(trackCode.trim());
+      if (!orderData) {
         setError(t("notFoundDescription") || "Order not found.");
         setOrder(null);
       } else {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
-        setOrder({
-          customerName: data.customerName,
-          brand: data.deviceBrand,
-          model: data.deviceModel,
-          imei: data.imei,
-          problemDescription: data.problemDescription,
-          status: data.status,
-          lastUpdatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
-        });
+        setOrder(orderData);
       }
     } catch (err: any) {
-      setError(t("notFoundDescription") || "Order not found.");
+      console.error('Track order error:', err);
+      // Handle specific error messages from the helper
+      if (err.message.includes('Access denied')) {
+        setError("Service temporarily unavailable. Please contact support.");
+      } else if (err.message.includes('Service temporarily unavailable')) {
+        setError("Service temporarily unavailable. Please try again later.");
+      } else if (err.message.includes('Authentication required')) {
+        setError("Service configuration error. Please contact support.");
+      } else {
+        setError(t("notFoundDescription") || "Order not found.");
+      }
     } finally {
       setLoading(false);
     }
@@ -63,26 +61,25 @@ const TrackOrder = () => {
         setError("");
         setLoading(true);
         try {
-          const q = query(collection(db, "repairOrders"), where("trackCode", "==", codeFromUrl.trim()));
-          const querySnapshot = await getDocs(q);
-          if (querySnapshot.empty) {
+          const orderData = await getOrderByTrackCode(codeFromUrl.trim());
+          if (!orderData) {
             setError(t("notFoundDescription") || "Order not found.");
             setOrder(null);
           } else {
-            const doc = querySnapshot.docs[0];
-            const data = doc.data();
-            setOrder({
-              customerName: data.customerName,
-              brand: data.deviceBrand,
-              model: data.deviceModel,
-              imei: data.imei,
-              problemDescription: data.problemDescription,
-              status: data.status,
-              lastUpdatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
-            });
+            setOrder(orderData);
           }
         } catch (err: any) {
-          setError(t("notFoundDescription") || "Order not found.");
+          console.error('Track order error:', err);
+          // Handle specific error messages from the helper
+          if (err.message.includes('Access denied')) {
+            setError("Service temporarily unavailable. Please contact support.");
+          } else if (err.message.includes('Service temporarily unavailable')) {
+            setError("Service temporarily unavailable. Please try again later.");
+          } else if (err.message.includes('Authentication required')) {
+            setError("Service configuration error. Please contact support.");
+          } else {
+            setError(t("notFoundDescription") || "Order not found.");
+          }
         } finally {
           setLoading(false);
         }

@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -18,8 +19,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
 
-export { app, db, analytics };
+export { app, db, analytics, auth };
 
 // Firestore helpers for RepairOrders (must be after db is defined)
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";

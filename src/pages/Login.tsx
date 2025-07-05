@@ -32,15 +32,26 @@ const Login = () => {
     setIsLoading(true);
     const auth = getAuth(app);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
-      setIsAuthenticated(true);
+      await signInWithEmailAndPassword(auth, email, password);
+      // Auth state will be handled by the useAuth hook
       toast.success(t('successLogin'));
       navigate("/");
-    } catch (error) {
-      toast.error(t('errorLogin'));
+    } catch (error: any) {
+      console.error('Login error:', error);
+      let errorMsg = t('errorLogin');
+
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/user-not-found') {
+        errorMsg = t('errorUserNotFound') || 'User not found';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMsg = t('errorWrongPassword') || 'Wrong password';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMsg = t('errorInvalidEmail') || 'Invalid email';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMsg = t('errorTooManyRequests') || 'Too many failed attempts. Please try again later.';
+      }
+
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -51,15 +62,21 @@ const Login = () => {
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
-      setIsAuthenticated(true);
+      await signInWithPopup(auth, provider);
+      // Auth state will be handled by the useAuth hook
       toast.success(t('successLogin'));
       navigate("/");
-    } catch (error) {
-      toast.error(t('errorLogin'));
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      let errorMsg = t('errorLogin');
+
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMsg = t('errorPopupClosed') || 'Login popup was closed';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMsg = t('errorPopupBlocked') || 'Login popup was blocked. Please allow popups for this site.';
+      }
+
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
