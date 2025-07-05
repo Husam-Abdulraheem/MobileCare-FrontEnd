@@ -88,7 +88,7 @@ const RepairOrders = () => {
         const q = query(collection(db, "repairOrders"), where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
         console.log('[Firestore] Query snapshot:', querySnapshot);
-        const fbOrders = querySnapshot.docs.map(doc => {
+        let fbOrders = querySnapshot.docs.map(doc => {
           const data = doc.data();
           console.log('[Firestore] Order doc:', doc.id, data);
           return {
@@ -109,7 +109,13 @@ const RepairOrders = () => {
             trackCode: data.trackCode || ""
           };
         });
-        console.log('[Firestore] Parsed orders:', fbOrders);
+        // Sort orders by dateCreated descending (newest first)
+        fbOrders = fbOrders.sort((a, b) => {
+          const aTime = a.dateCreated instanceof Date ? a.dateCreated.getTime() : 0;
+          const bTime = b.dateCreated instanceof Date ? b.dateCreated.getTime() : 0;
+          return bTime - aTime;
+        });
+        console.log('[Firestore] Parsed & sorted orders:', fbOrders);
         setOrders(fbOrders);
       } catch (e) {
         console.error('[Firestore] Error fetching orders:', e);
