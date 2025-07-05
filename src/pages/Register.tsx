@@ -37,11 +37,18 @@ const Register = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       localStorage.setItem("token", await userCredential.user.getIdToken());
       localStorage.setItem("currentUser", JSON.stringify({ uid: userCredential.user.uid, email: userCredential.user.email, fullName }));
-      // Save user info in Firestore
+      // Save user info in Firestore (old users collection)
       await setDoc(doc(db, "users", userCredential.user.uid), {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
         fullName
+      });
+      // Also save user info in a new collection (e.g., userProfiles)
+      await setDoc(doc(db, "userProfiles", userCredential.user.uid), {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        fullName,
+        createdAt: new Date().toISOString()
       });
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
@@ -66,6 +73,13 @@ const Register = () => {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName || ""
+      });
+      // Also save user info in a new collection (e.g., userProfiles)
+      await setDoc(doc(db, "userProfiles", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        fullName: user.displayName || "",
+        createdAt: new Date().toISOString()
       });
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
