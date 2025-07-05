@@ -272,7 +272,7 @@ const RepairOrders = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 dark:from-gray-900 dark:to-gray-800 p-0 md:p-0">
       <Navbar showHome={true} showOrders={false} showLogout={true} showStatistics={true} />
-      <main className="max-w-7xl mx-auto px-4 py-10">
+      <main className="w-full max-w-[1800px] mx-auto px-2 py-10">
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="flex-1 flex items-center gap-2 bg-white dark:bg-gray-900 rounded-lg shadow px-4 py-3">
             <Search className="text-gray-400" size={20} />
@@ -299,8 +299,8 @@ const RepairOrders = () => {
           </div>
         </div>
         <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md mb-8">
-          <div className="overflow-x-auto">
-            <Table>
+          <div className="overflow-x-auto w-full" style={{ minWidth: 320 }}>
+            <Table className="min-w-full text-sm md:text-base">
               <TableHeader>
                 <TableRow>
                   <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
@@ -419,8 +419,8 @@ const RepairOrders = () => {
         {collectedOrders.length > 0 && (
           <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-md">
             <div className="p-4 font-bold text-lg text-blue-700 dark:text-green-300">{t('collectedOrders')}</div>
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto w-full" style={{ minWidth: 320 }}>
+              <Table className="min-w-full text-sm md:text-base">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="min-w-[120px]">{t('customerName')}</TableHead>
