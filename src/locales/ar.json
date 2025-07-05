@@ -31,6 +31,7 @@
   "logout": "تسجيل الخروج",
   "login": "تسجيل الدخول",
   "username": "اسم المستخدم",
+  "fullName": "الاسم الكامل",
   "password": "كلمة المرور",
   "submit": "إرسال",
   "customerInformation": "معلومات العميل",
@@ -83,7 +84,18 @@
   "haveAccount": "لديك حساب بالفعل؟",
   "noAccount": "ليس لديك حساب؟",
   "print": "طباعة",
-  "repairOrderReceipt": "إيصال طلب الإصلاح",
+  "repairOrderReceipt": "فاتورة صيانة",
   "printDate": "تاريخ الطباعة",
-  "collectedOrders": "الطلبات التي تم استلامها"
+  "collectedOrders": "الطلبات التي تم استلامها",
+  "userNameLabel": "اسم المستخدم",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+  "sendResetLink": "إرسال رابط إعادة التعيين",
+  "backToLogin": "العودة لتسجيل الدخول",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "resetEmailSent": "تم إرسال بريد إعادة تعيين كلمة المرور.",
+  "errorResetPassword": "فشل في إرسال بريد إعادة التعيين.",
+  "email": "البريد الإلكتروني",
+  "emailPlaceholder": "أدخل بريدك الإلكتروني",
+  "errorUserNotFound": "لا يوجد مستخدم بهذا البريد الإلكتروني.",
+  "errorInvalidEmail": "عنوان البريد الإلكتروني غير صالح."
 }

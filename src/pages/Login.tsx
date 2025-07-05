@@ -98,6 +98,14 @@ const Login = () => {
                     autoComplete="email"
                   />
                 </div>
+                <div className="text-right">
+                  <a
+                    href="/reset-password"
+                    className="text-xs text-blue-600 hover:underline mt-1"
+                  >
+                    {t('forgotPassword', 'Forgot password?')}
+                  </a>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-right block">{t('password')}</Label>

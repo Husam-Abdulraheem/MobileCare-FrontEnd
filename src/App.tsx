@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import Statistics from "./pages/Statistics";
 import TrackOrder from "./pages/TrackOrder";
 import PrintOrder from "./pages/PrintOrder";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => {
                   </ProtectedRoute>
                 } />
                 <Route path="/track" element={<TrackOrder />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/print/:orderId" element={<ProtectedRoute><PrintOrder /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

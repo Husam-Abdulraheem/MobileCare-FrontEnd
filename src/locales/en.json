@@ -33,6 +33,7 @@
   "logout": "Logout",
   "login": "Login",
   "username": "Username",
+  "fullName": "Full Name",
   "password": "Password",
   "submit": "Submit",
   "systemDescription": "Repair Order Management System",
@@ -99,7 +100,18 @@
   "haveAccount": "Already have an account?",
   "noAccount": "Don't have an account?",
   "print": "Print",
-  "repairOrderReceipt": "Repair Order Receipt",
+  "repairOrderReceipt": "Maintenance bill",
   "printDate": "Print Date",
-  "collectedOrders": "Collected Orders"
+  "collectedOrders": "Collected Orders",
+  "userNameLabel": "User Name",
+    "resetPassword": "Reset Password",
+  "sendResetLink": "Send Reset Link",
+  "backToLogin": "Back to login",
+  "forgotPassword": "Forgot password?",
+  "resetEmailSent": "Password reset email sent.",
+  "errorResetPassword": "Failed to send reset email.",
+  "email": "Email",
+  "emailPlaceholder": "Enter your email",
+  "errorUserNotFound": "No user found with this email.",
+  "errorInvalidEmail": "Invalid email address."
 }

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { User, Lock, LogIn } from "lucide-react";
 import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,13 +20,14 @@ const Register = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!email || !password || !fullName) {
       toast.error(t('errorRequiredFields'));
       return;
     }
@@ -33,7 +36,13 @@ const Register = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       localStorage.setItem("token", await userCredential.user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: userCredential.user.uid, email: userCredential.user.email }));
+      localStorage.setItem("currentUser", JSON.stringify({ uid: userCredential.user.uid, email: userCredential.user.email, fullName }));
+      // Save user info in Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        fullName
+      });
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
       navigate("/");
@@ -52,7 +61,12 @@ const Register = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       localStorage.setItem("token", await user.getIdToken());
-      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email }));
+      localStorage.setItem("currentUser", JSON.stringify({ uid: user.uid, email: user.email, fullName: user.displayName || "" }));
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        fullName: user.displayName || ""
+      });
       setIsAuthenticated(true);
       toast.success(t('successRegister'));
       navigate("/");
@@ -80,6 +94,20 @@ const Register = () => {
           </CardHeader>
           <form onSubmit={handleRegister}>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-right block">{t('fullName', 'Full Name')}</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Input
+                    id="fullName"
+                    placeholder={t('fullName', 'Full Name')}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="pl-10"
+                    autoComplete="name"
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-right block">{t('username')}</Label>
                 <div className="relative">

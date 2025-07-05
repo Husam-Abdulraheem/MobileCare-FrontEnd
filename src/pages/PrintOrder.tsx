@@ -9,6 +9,7 @@ import logo from "../../public/favicon.ico";
 const PrintOrder = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -25,6 +26,51 @@ const PrintOrder = () => {
     };
     fetchOrder();
   }, [orderId, navigate]);
+
+  // Fetch user name from Firestore
+  useEffect(() => {
+    if (!order) return;
+    const fetchUserName = async () => {
+      let uid = order.userId;
+      if (!uid) {
+        // Try to get from localStorage
+        const userStr = localStorage.getItem("currentUser");
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            uid = user.uid;
+          } catch { }
+        }
+      }
+      if (uid) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", uid));
+          if (userDoc.exists()) {
+            setUserName(userDoc.data().fullName || userDoc.data().email || "");
+          } else {
+            // fallback to email in localStorage
+            const userStr = localStorage.getItem("currentUser");
+            if (userStr) {
+              try {
+                const user = JSON.parse(userStr);
+                setUserName(user.fullName || user.email || "");
+              } catch { }
+            }
+          }
+        } catch {
+          // fallback to email in localStorage
+          const userStr = localStorage.getItem("currentUser");
+          if (userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              setUserName(user.fullName || user.email || "");
+            } catch { }
+          }
+        }
+      }
+    };
+    fetchUserName();
+  }, [order]);
 
   useEffect(() => {
     if (order) {
@@ -58,7 +104,17 @@ const PrintOrder = () => {
         alignItems: 'center',
       }}>
         <img src={logo} alt="Logo" style={{ width: 48, height: 48, borderRadius: 8, marginBottom: 10, boxShadow: '0 2px 8px #0001' }} />
-        <h2 style={{ color: '#2563eb', fontWeight: 700, fontSize: 24, letterSpacing: 0.5, margin: 0, marginBottom: 18 }}>{t('repairOrderReceipt')}</h2>
+        <h2 style={{ color: '#2563eb', fontWeight: 700, fontSize: 24, letterSpacing: 0.5, margin: 0, marginBottom: 8 }}>{t('repairOrderReceipt')}</h2>
+        {/* User name and print date under the title */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ color: '#64748b', fontSize: 13, fontWeight: 500, marginBottom: 1 }}>{t('userNameLabel', 'User Name')}</span>
+            <span style={{ fontWeight: 600, fontSize: 15, color: '#222', letterSpacing: 0.2 }}>{userName}</span>
+          </div>
+          <div style={{ color: '#64748b', fontSize: 13, fontWeight: 500 }}>
+            {t('printDate')}: <span style={{ color: '#222', fontWeight: 600 }}>{format(new Date(), 'dd/MM/yyyy HH:mm')}</span>
+          </div>
+        </div>
         <table style={{ width: '100%', fontSize: 15, marginBottom: 18, borderCollapse: 'separate', borderSpacing: 0 }}>
           <tbody>
             <tr>
@@ -111,16 +167,7 @@ const PrintOrder = () => {
             )}
           </tbody>
         </table>
-        <div style={{
-          textAlign: 'right',
-          color: '#64748b',
-          fontSize: 13,
-          marginBottom: 18,
-          fontWeight: 500,
-          width: '100%'
-        }}>
-          {t('printDate')}: <span style={{ color: '#222', fontWeight: 600 }}>{format(new Date(), 'dd/MM/yyyy HH:mm')}</span>
-        </div>
+        {/* print date and user name now shown above, under the title */}
         {/* No navigation button on print page */}
       </div>
     </div>
