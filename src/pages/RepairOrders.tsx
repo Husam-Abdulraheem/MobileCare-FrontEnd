@@ -62,7 +62,7 @@ const RepairOrders = () => {
   const [qrTrackCode, setQrTrackCode] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('RepairOrders component mounted');
+    // console.log('RepairOrders component mounted');
     // Get userId from Firebase Auth localStorage (currentUser)
     let userId = null;
     try {
@@ -74,7 +74,7 @@ const RepairOrders = () => {
     } catch (err) {
       console.error('Error parsing currentUser from localStorage:', err);
     }
-    console.log('userId from localStorage:', userId);
+    // console.log('userId from localStorage:', userId);
     // Remove error toast for missing userId, just skip fetch
     if (!userId) {
       console.warn('Skipping fetch, no userId');
@@ -83,14 +83,14 @@ const RepairOrders = () => {
     }
     // Fetch orders from Firestore for this user
     const fetchOrders = async () => {
-      console.log('[Firestore] Fetching orders for userId:', userId);
+      // console.log('[Firestore] Fetching orders for userId:', userId);
       try {
         const q = query(collection(db, "repairOrders"), where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
-        console.log('[Firestore] Query snapshot:', querySnapshot);
+        // console.log('[Firestore] Query snapshot:', querySnapshot);
         let fbOrders = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          console.log('[Firestore] Order doc:', doc.id, data);
+          // console.log('[Firestore] Order doc:', doc.id, data);
           return {
             id: doc.id,
             customerName: data.customerName || "",
@@ -115,7 +115,7 @@ const RepairOrders = () => {
           const bTime = b.dateCreated instanceof Date ? b.dateCreated.getTime() : 0;
           return bTime - aTime;
         });
-        console.log('[Firestore] Parsed & sorted orders:', fbOrders);
+        // console.log('[Firestore] Parsed & sorted orders:', fbOrders);
         setOrders(fbOrders);
       } catch (e) {
         console.error('[Firestore] Error fetching orders:', e);
