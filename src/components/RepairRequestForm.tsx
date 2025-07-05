@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, Phone, Wrench, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ interface RepairOrder {
 }
 
 export const RepairRequestForm = () => {
+  const navigate = useNavigate();
   // Form state
   const { t } = useTranslation();
   const [customerName, setCustomerName] = useState("");
@@ -85,6 +87,7 @@ export const RepairRequestForm = () => {
       });
       handleClearForm();
       toast.success(t('successOrderCreated'));
+      navigate('/orders');
     } catch (error) {
       toast.error(t('errorOrderCreate'));
     } finally {
