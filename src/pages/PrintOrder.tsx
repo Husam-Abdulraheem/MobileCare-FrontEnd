@@ -27,50 +27,42 @@ const PrintOrder = () => {
     fetchOrder();
   }, [orderId, navigate]);
 
-  // Fetch user name from Firestore
+  // Fetch user name from Firestore only
   useEffect(() => {
     if (!order) return;
-    const fetchUserName = async () => {
-      let uid = order.userId;
-      if (!uid) {
-        // Try to get from localStorage
-        const userStr = localStorage.getItem("currentUser");
-        if (userStr) {
-          try {
-            const user = JSON.parse(userStr);
-            uid = user.uid;
-          } catch { }
-        }
+    // Check if user is authenticated (by checking localStorage or Firebase Auth)
+    let userId = null;
+    try {
+      const userStr = localStorage.getItem("currentUser");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        userId = user.uid;
       }
+    } catch {}
+    if (!userId) {
+      // Not authenticated, redirect to login
+      navigate('/login');
+      return;
+    }
+    const fetchUserName = async () => {
+      const uid = order.userId;
       if (uid) {
         try {
           const userDoc = await getDoc(doc(db, "users", uid));
           if (userDoc.exists()) {
             setUserName(userDoc.data().fullName || userDoc.data().email || "");
           } else {
-            // fallback to email in localStorage
-            const userStr = localStorage.getItem("currentUser");
-            if (userStr) {
-              try {
-                const user = JSON.parse(userStr);
-                setUserName(user.fullName || user.email || "");
-              } catch { }
-            }
+            setUserName(""); // Not found
           }
         } catch {
-          // fallback to email in localStorage
-          const userStr = localStorage.getItem("currentUser");
-          if (userStr) {
-            try {
-              const user = JSON.parse(userStr);
-              setUserName(user.fullName || user.email || "");
-            } catch { }
-          }
+          setUserName("");
         }
+      } else {
+        setUserName("");
       }
     };
     fetchUserName();
-  }, [order]);
+  }, [order, navigate]);
 
   useEffect(() => {
     if (order) {
