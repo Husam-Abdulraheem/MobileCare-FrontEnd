@@ -112,7 +112,7 @@ const TrackOrder = () => {
           {loading && <div className="text-center mt-4 text-blue-500">{t("loading")}</div>}
           {error && <div className="text-center mt-4 text-red-500">{error}</div>}
           {order && (
-            <div className="mt-6 space-y-2 border-t pt-4">
+            <div className="mt-6 space-y-2 border-t pt-4 text-right">
               <div><b>{t("customerName")}</b>: {order.customerName}</div>
               <div><b>{t("deviceBrand")}</b>: {order.brand}</div>
               <div><b>{t("deviceModel")}</b>: {order.model}</div>
