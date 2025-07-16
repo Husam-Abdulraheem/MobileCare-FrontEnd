@@ -88,7 +88,7 @@
   "printDate": "Yazdırma Tarihi",
   "collectedOrders": "Teslim Alınan Talepler",
   "userNameLabel": "Kullanıcı Adı",
-    "resetPassword": "Şifreyi Sıfırla",
+  "resetPassword": "Şifreyi Sıfırla",
   "sendResetLink": "Sıfırlama Bağlantısı Gönder",
   "backToLogin": "Girişe dön",
   "forgotPassword": "Şifrenizi mi unuttunuz?",
@@ -97,5 +97,9 @@
   "email": "E-posta",
   "emailPlaceholder": "E-posta adresinizi girin",
   "errorUserNotFound": "Bu e-posta ile kullanıcı bulunamadı.",
-  "errorInvalidEmail": "Geçersiz e-posta adresi."
+  "errorInvalidEmail": "Geçersiz e-posta adresi.",
+  "contactSupport": "Destek ile İletişim",
+  "contactSupportDescription": "Destek için WhatsApp veya E-posta ile bize ulaşın.",
+  "contactViaWhatsApp": "WhatsApp",
+  "contactViaEmail": "E-posta"
 }

@@ -104,7 +104,7 @@
   "printDate": "Print Date",
   "collectedOrders": "Collected Orders",
   "userNameLabel": "User Name",
-    "resetPassword": "Reset Password",
+  "resetPassword": "Reset Password",
   "sendResetLink": "Send Reset Link",
   "backToLogin": "Back to login",
   "forgotPassword": "Forgot password?",
@@ -113,5 +113,9 @@
   "email": "Email",
   "emailPlaceholder": "Enter your email",
   "errorUserNotFound": "No user found with this email.",
-  "errorInvalidEmail": "Invalid email address."
+  "errorInvalidEmail": "Invalid email address.",
+  "contactSupport": "Contact Support",
+  "contactSupportDescription": "Reach us via WhatsApp or Email for support.",
+  "contactViaWhatsApp": "WhatsApp",
+  "contactViaEmail": "Email"
 }

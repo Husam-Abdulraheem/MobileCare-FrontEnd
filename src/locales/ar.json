@@ -88,7 +88,7 @@
   "printDate": "تاريخ الطباعة",
   "collectedOrders": "الطلبات التي تم استلامها",
   "userNameLabel": "اسم المستخدم",
-    "resetPassword": "إعادة تعيين كلمة المرور",
+  "resetPassword": "إعادة تعيين كلمة المرور",
   "sendResetLink": "إرسال رابط إعادة التعيين",
   "backToLogin": "العودة لتسجيل الدخول",
   "forgotPassword": "هل نسيت كلمة المرور؟",
@@ -97,5 +97,9 @@
   "email": "البريد الإلكتروني",
   "emailPlaceholder": "أدخل بريدك الإلكتروني",
   "errorUserNotFound": "لا يوجد مستخدم بهذا البريد الإلكتروني.",
-  "errorInvalidEmail": "عنوان البريد الإلكتروني غير صالح."
+  "errorInvalidEmail": "عنوان البريد الإلكتروني غير صالح.",
+  "contactSupport": "الاتصال بالدعم",
+  "contactSupportDescription": "هل واجهت مشكلة تواصل معنا عبر واتساب أو البريد الإلكتروني للدعم",
+  "contactViaWhatsApp": "واتساب",
+  "contactViaEmail": "البريد الإلكتروني"
 }

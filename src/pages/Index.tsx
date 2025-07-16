@@ -4,6 +4,11 @@ import { RepairRequestForm } from "@/components/RepairRequestForm";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ListFilter, Smartphone, LayoutGrid, User, Wrench } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { MessageCircle } from "lucide-react";
+
+const SUPPORT_WHATSAPP = "https://wa.me/967717656259"; // Replace with actual number
+const SUPPORT_EMAIL = "ht93297@gmail.com"; // Replace with actual email
 
 const Index = () => {
   const { t } = useTranslation();
@@ -52,6 +57,44 @@ const Index = () => {
           </div>
         </aside>
       </main>
+      {/* Floating Contact Support Button */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white w-14 h-14 flex items-center justify-center"
+            size="icon"
+            aria-label="Contact Support"
+          >
+            <MessageCircle size={28} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("contactSupport", { defaultValue: "Contact Support" })}</DialogTitle>
+            <DialogDescription>
+              {t("contactSupportDescription", { defaultValue: "Reach us via WhatsApp or Email for support." })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-4">
+            <a
+              href={SUPPORT_WHATSAPP}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full"
+            >
+              <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold flex items-center gap-2 justify-center">
+                <MessageCircle size={20} /> {t("contactViaWhatsApp", { defaultValue: "WhatsApp" })}
+              </Button>
+            </a>
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="w-full">
+              <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold flex items-center gap-2 justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.876 1.797l-7.5 5.625a2.25 2.25 0 01-2.748 0l-7.5-5.625A2.25 2.25 0 012.25 6.993V6.75" /></svg>
+                {t("contactViaEmail", { defaultValue: "Email" })}
+              </Button>
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
