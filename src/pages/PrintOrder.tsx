@@ -4,7 +4,6 @@ import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { format } from "date-fns";
 import { useTranslation } from 'react-i18next';
-import logo from "../../public/favicon.ico";
 
 const PrintOrder = () => {
   const { orderId } = useParams();
@@ -95,8 +94,8 @@ const PrintOrder = () => {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <img src={logo} alt="Logo" style={{ width: 48, height: 48, borderRadius: 8, marginBottom: 10, boxShadow: '0 2px 8px #0001' }} />
-        <h2 style={{ color: '#2563eb', fontWeight: 700, fontSize: 24, letterSpacing: 0.5, margin: 0, marginBottom: 8 }}>{t('repairOrderReceipt')}</h2>
+        
+        <h2 style={{ color: '#2563eb', fontWeight: 700, fontSize: 24, letterSpacing: 0.5, margin: 0, marginBottom: 32 }}>{t('repairOrderReceipt')}</h2>
         {/* User name and print date under the title */}
         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
