@@ -17,6 +17,7 @@ export const getOrderByTrackCode = async (trackCode: string) => {
       model: data.deviceModel,
       imei: data.imei,
       problemDescription: data.problemDescription,
+      estimatedCost: data.estimatedCost,
       status: data.status,
       lastUpdatedAt: data.updatedAt || data.createdAt || new Date().toISOString(),
       trackCode: data.trackCode,

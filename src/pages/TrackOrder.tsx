@@ -118,6 +118,8 @@ const TrackOrder = () => {
               <div><b>{t("deviceModel")}</b>: {order.model}</div>
               {order.imei && <div><b>{t("imei")}</b>: {order.imei}</div>}
               <div><b>{t("problemDescription")}</b>: {order.problemDescription}</div>
+              <div><b>{t("estimatedCost")}</b>: {order.estimatedCost} &#65020;</div>
+
               <div><b>{t("status")}</b>: {(() => {
                 switch (order.status) {
                   case "Pending": return t("pending");
