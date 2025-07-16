@@ -265,7 +265,7 @@ export const RepairRequestForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="estimatedCost" className="text-sm font-medium">
-                {t('estimatedCost')} ($) <span className="text-red-500">*</span>
+                {t('estimatedCost')} (&#65020;) <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="estimatedCost"

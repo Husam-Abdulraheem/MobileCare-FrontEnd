@@ -340,7 +340,7 @@ const RepairOrders = () => {
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
                       <TableCell>{translateDeviceCondition(order.deviceCondition)}</TableCell>
-                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
+                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} &#65020;</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1 items-start">
@@ -450,7 +450,7 @@ const RepairOrders = () => {
                         <div className="truncate">{order.problemDescription}</div>
                       </TableCell>
                       <TableCell>{translateDeviceCondition(order.deviceCondition)}</TableCell>
-                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} $</TableCell>
+                      <TableCell dir="ltr" className="text-right">{order.estimatedCost} &#65020;</TableCell>
                       <TableCell>{format(order.deliveryDate, 'dd/MM/yyyy')}</TableCell>
                       <TableCell>
                         <span className={`w-32 ${getStatusColor(order.status)}`}>{translateStatus(order.status)}</span>
